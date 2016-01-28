@@ -1,0 +1,76 @@
+# CA
+## TD 2
+### Lambda-calcul
+```
+(λx.λy.y)((λx.(x x))(λx(x x)))
+```
+AST: cf. feuille
+
+#### Réduction;
+* de gauche à droite
+* la définition la plus à l'intérieur
+* sans réduire les abstractions
+
+##### Exemple:
+
+Choix de l'expression à réduire: cf. feuille
+
+(λx.λy.y)**((λx.(x x))(λx(x x))**)
+
+(x x)[x -> λx.(x x)]
+
+(x[x -> λx.(x x)] x[x -> λx.(x x)])
+
+(λx.(x x))(λx.(x x))
+
+-> Réduction infinie - expression appliquée à elle-même = wtf.
+
+#### Réduction en ordre normal:
+* de gauche à droite
+* application la plus à l'extérieur
+
+**(λx.λy.y)**((λx.(x x))(λx(x x)))
+
+(λy y)[x -> (λx.(x x))(λx.(x x))]
+
+/!\ Substitution dans une abstraction - **attention** aux variables *liées*.
+
+λy (y[x -> (λx.(x x))(λx.(x x))])
+
+(λy.y)
+
+### Encodage de Church
+#### Entiers
+```
+0 ≅ λf.λn.n
+1 ≅ λf.λn.f n
+2 ≅ λf.λn.f (f n)
+..
+
+succ t ≅ λt.λf.λn.f((t f) n)
+
+succ 0 ≅ (λt.λf.λn.f((t f) n))(λf.λn.n)
+       ≅ (λf.λn.f(((λf.λn.n) f) n))
+       ≅ (λf.λn.f((λn.n) n))
+       ≅ (λf.λn.(f n))
+
+add u v ≅ λu.λv.λf.λn.u f (v f n)
+
+add 1 2 ≅ (λu.λv.λf.λn.u f (v f n))(λf.λn.f n)(λf.λn.f (f n))
+        ≅ λf.λn.(λf.λf. n) f ((λf.λn.f (f n)) f n)
+        ≅ λf.λn (λn.f n) (f (f n))
+        ≅ λf.λn f (f (f n))
+
+mult u v ≅ ??
+
+```
+#### Booléens
+```
+Condition: λt.λf.λc
+True:  λa.λb.a
+False: λa.λb.
+
+If  : λt.λf.λc c t f
+Not : λb.condition false true b
+        λb.b (λa.λb b)(λa.λb b)
+```

@@ -1,0 +1,5 @@
+%: %.c
+	gcc -Wall -O3 -o $@ -I /Vrac/esling -L /Vrac/esling $< -lfthread -lpthread
+
+clean:
+	rm -f *~ *.o

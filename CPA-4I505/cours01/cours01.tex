@@ -1,0 +1,52 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\begin{document}
+\title{CPA - Cours 1}
+\maketitle
+\section{Exercice: collision entre cercles}
+Math.sqrt((c1.x - c2.x)2 + (c1.y - c2)2) $<=$ c1.radius + c2.radius
+
+Complexité forte à cause de sqrt: tout mettre au carré
+
+(c1.x - c2.x)2 + (c1.y - c2.y)2 $<=$ (c1.radius + c2.radius)2
+\section{Cercle minimum}
+IN: Points, liste de coordonnées de points en 2D.
+
+OUT: cercle de rayon minimum couvrant tous les points de la liste
+
+\subsection{Version naive}
+\begin{itemize}
+\item Lemme 1: 
+\end{itemize}
+\begin{verbatim}
+for p in points
+   for q in points
+       c = cercle((p+q)/2, d(p,q)/2)
+       if containsAll(c, points)
+          return c;
+for p in points
+   for q in points
+      for r in points
+         c = cercle(p, q, r)
+         if containsall(c, points)
+            return c
+return null;
+\end{verbatim}
+Complexité n4
+\subsection{Algorithme incrémental}
+\begin{verbatim}
+p = points.popRandom();
+q = points.popRandom();
+c = cercle((p+q)/2, d(p, q)/2);
+for p in points
+   if c.contains(p)
+      points.remove(p)
+while !points.isEmpty()
+   s = points.popRandom();
+   c = update(c, s);
+   for p in points
+      if c.contains(p)
+         points.remove(p)
+return c;
+\end{verbatim}
+\end{document}

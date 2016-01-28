@@ -1,0 +1,20 @@
+(ns clojure-opengl.core
+  (:import org.lwjgl.glfw.GLFW)
+  (:gen-class))
+
+(defn emptyWindow
+  "Create an empty OpenGL window. Coooool."
+  []
+  (glfwInit)
+  (let [window (glfwCreateWindow 300 300 "Hello" NULL NULL)]
+    (if (nil? window) false (glfwShowWindow window)
+        )
+    )
+  )
+
+(defn -main
+  "I don't do a whole lot ... yet."
+  [& args]
+  (println "Hello, World!")
+  (emptyWindow)
+  )
