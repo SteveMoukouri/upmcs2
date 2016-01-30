@@ -19,9 +19,14 @@
     )
   )
 
-(def _signals_
-  {:tick []
-   :stop [] 
+(defn tick-received
+  []
+  (println "Tick!")
+)
+
+(def embla-signals
+  {:tick [#(tick-received)]
+   :stop 1
    }
 )
 
@@ -32,10 +37,17 @@
   ;; every time the signal is emitted.
   ;; TODO: Some kind of arity check?
   [signame sigfun]
-  (if (nil? (get _signals_ signame))
+  (if (nil? (get embla-signals signame))
     (println "No signal matching " signame)
-    (assoc (_signals_ signame (cons sigfun (get _signals_ signame))))
+    (do 
+      (assoc (embla-signals signame (cons sigfun (get embla-signals signame))))
+      (println "Matching signal" signame)
     )
+  )
+  )
+
+(defn execute [fun args]
+  (apply fun args)
   )
 
 (defn emit
@@ -44,21 +56,26 @@
   ;; TODO: check for function arity?
   
   [signame & sigargs]
-  (if 
-      (nil? (get _signals_ signame))
-    (print "Error: no signal matching " signame)
-    (map (fn [function] (apply function sigargs)) (get _signals_ signame))
+  (let [funlist (get embla-signals signame)]
+    (if (nil? funlist)
+      (println "Error: no signal matching " signame)
+      (do 
+        (if (nil? sigargs)
+          ;; No arguments for signal
+          (doseq [f funlist] (f))
+          ;; Apply argument list for signal functions
+          (doseq [f funlist] (f))
+          )
+        )
+      )
     )
   )
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;; SHORT AND UNASSUMING BUT CAPITAL ;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn gameloop 
   ;; The gameloop. Set up stuff if first launch, else keep sending 'tick' until
   ;; close time.
   ;; TODO: How the fuck do we shut the loop?
-  ([] 
+  [] 
    (def time-last-tick (atom 0))
    (while true
      (let [current (System/currentTimeMillis)]
@@ -74,7 +91,6 @@
        )
      )
    )
-  )
 
 (defn -main
   "I don't do a whole lot ... yet."
@@ -83,4 +99,3 @@
   (println "Beginning gameloop...")
   (gameloop)
   )
-
