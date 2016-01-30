@@ -23,7 +23,7 @@ On ne peut pas appliquer indéfiniment l'opérateur (sans appliquer d'autres op�
 ##### Exemple
 pump : [Cuve] x double -> [Cuve]
 * **pre:** pump(C, q) require 0 < q <= quantity(C)
-    * **converge** variant pump(C)
+    * **converge** pump(C) # **variant**
 
 variant(C) (def)= |quantity(C)|
 
