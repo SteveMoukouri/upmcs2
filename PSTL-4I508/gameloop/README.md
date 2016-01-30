@@ -1,20 +1,20 @@
-# gameloop
+# Gameloop
 
-FIXME: description
+A rough sketch of the signal infrastructure for Embla
 
 ## Installation
 
-Download from http://example.com/FIXME.
+Irrelevant
 
 ## Usage
 
-FIXME: explanation
+Irrelevant
 
-    $ java -jar gameloop-0.1.0-standalone.jar [args]
+    $ java -jar gameloop-0.1.0-standalone.jar
 
 ## Options
 
-FIXME: listing of options this app accepts.
+None
 
 ## Examples
 
@@ -24,13 +24,7 @@ FIXME: listing of options this app accepts.
 
 ...
 
-### Any Other Sections
-### That You Think
-### Might be Useful
-
 ## License
-
-Copyright © 2016 FIXME
 
 Distributed under the Eclipse Public License either version 1.0 or (at
 your option) any later version.
