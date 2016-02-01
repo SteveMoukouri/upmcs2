@@ -22,13 +22,15 @@
 (defn tick-received
   []
   (println "Tick!")
-)
+  )
 
 (def embla-signals
-  {:tick [#(tick-received)]
-   :stop 1
+  {
+   :tick [#(tick-received)]
+   ;;:stop [(System/exit)]
+   ;;:reset [#(loop-init)]
    }
-)
+  )
 
 (defn subscribe 
   ;; Subscription mechanism.
@@ -42,12 +44,8 @@
     (do 
       (assoc (embla-signals signame (cons sigfun (get embla-signals signame))))
       (println "Matching signal" signame)
+      )
     )
-  )
-  )
-
-(defn execute [fun args]
-  (apply fun args)
   )
 
 (defn emit
@@ -59,16 +57,16 @@
   (let [funlist (get embla-signals signame)]
     (if (nil? funlist)
       (println "Error: no signal matching " signame)
-      (do 
-        (if (nil? sigargs)
-          ;; No arguments for signal
-          (doseq [f funlist] (f))
-          ;; Apply argument list for signal functions
-          (doseq [f funlist] (f))
-          )
-        )
+      (doseq [f funlist] (f))
       )
     )
+  )
+
+(defn loop-init 
+  ;; Init: stuff to do before starting the loop
+  ;; To be called once every reset
+  [] 
+  ()
   )
 
 (defn gameloop 
@@ -76,26 +74,35 @@
   ;; close time.
   ;; TODO: How the fuck do we shut the loop?
   [] 
-   (def time-last-tick (atom 0))
-   (while true
-     (let [current (System/currentTimeMillis)]
-       (let [delta-t (- current @time-last-tick)]
-         (if (> delta-t 1000)
-           (do
-             (emit :tick)
-             (swap! time-last-tick (fn [x] current))
-             )
-           ()
-           )
-         )
-       )
-     )
-   )
+  (loop-init)
+  (let [time-last-tick (atom 0)]
+    (while true
+      (let [current (System/currentTimeMillis)]
+        (let [delta-t (- current @time-last-tick)]
+          (if (> delta-t 1000)
+            (do
+              (emit :tick)
+              (swap! time-last-tick (fn [x] current))
+              )
+            ()
+            )
+          )
+        )
+      )
+    )
+  )
 
 (defn -main
-  "I don't do a whole lot ... yet."
+  "Launch Embla. REPL live coding optional"
   [& args]
   (println "Hello, Embla!")
-  (println "Beginning gameloop...")
+  (println "Beginning gameloop...")*
+  
+  ;; REPL?
+  ;(if (repl-needed)
+  ;  (start-repl)
+  ;  ()
+  ;  )
+  ;; Loop start
   (gameloop)
   )
