@@ -4,6 +4,9 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.7.0"]]
+    :resource-paths ["lwjgl_jar/lwjgl.jar"]
+  :jvm-opts [~(str "-Djava.library.path=lwjgl_native/:"
+                   (System/getProperty "java.library.path"))]
   :main ^:skip-aot gameloop.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}})

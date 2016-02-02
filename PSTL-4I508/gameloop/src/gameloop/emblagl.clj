@@ -1,4 +1,4 @@
-(ns clojure-opengl.emblagl
+(ns gameloop.emblagl
   (:import org.lwjgl.glfw.GLFW
            org.lwjgl.opengl.GL
            org.lwjgl.opengl.GL11
@@ -47,4 +47,12 @@
   (while (= (GLFW/glfwWindowShouldClose (deref opengl-window)) GLFW/GLFW_FALSE)
     (GL11/glClear (bit-or GL11/GL_COLOR_BUFFER_BIT GL11/GL_DEPTH_BUFFER_BIT))
     (GLFW/glfwSwapBuffers (deref opengl-window))
-    (GLFW/glfwPollEvents)))
+    (GLFW/glfwPollEvents))
+  (GLFW/glfwDestroyWindow (deref opengl-window)))
+
+(defn opengl-terminate
+  "Clean up after the window"
+  ;; TODO: 
+  ;;    - A terme - rajouter le release des callbacks et des erreurs
+  []
+  (GLFW/glfwTerminate))

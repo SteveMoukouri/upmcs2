@@ -1,4 +1,5 @@
 (ns gameloop.core
+  (:require [gameloop.emblagl :as egl])
   (:gen-class))
 
 
@@ -60,11 +61,6 @@
    }
   )
 
-(defn add-signal
-  ""
-  ([signame] (update-signal signame))
-  ([signame & sigfun] (update-signal signame sigfun)))
-
 (defn update-signal
   ;; Updates, or creates a new signal if no match. Allow to add custom signals.
   ;; Create the association signame and functions if any.
@@ -75,6 +71,11 @@
   ([signame & sigfun]
    (alter-var-root embla-signals (fn [var]
                                    (assoc var signame sigfun)))))
+
+(defn add-signal
+  ""
+  ([signame] (update-signal signame))
+  ([signame & sigfun] (update-signal signame sigfun)))
 
 (defn delete-signal
   ""
@@ -103,8 +104,7 @@
         (fn loop [sig lsigs]
           (if (empty? lsigs)
             false
-            (let [first-sig (first lsigs)]
-              [name-fun (sigfun-name sig)]
+            (let [first-sig (first lsigs) name-fun (sigfun-name sig)]
               (if (= (name-fun (sigfun-name first-sig)))
                 true
                 (loop sig (rest lsigs))))))]
@@ -120,9 +120,6 @@
         (do
           (alter-var-root embla-signals
                           #(assoc % signame (drop-fun (get % signame)))))))))
-  
-(defn execute [fun args]
-  (apply fun args))
 
 (defn emit
   ;; Emitting a signal: reception is done by subscribing to the signal.
@@ -157,12 +154,16 @@
   "Launch Embla. REPL live coding optional"
   [& args]
   (let [repl-needed false]  
-    (println "Hello, Embla!")
-    (println "Beginning gameloop...")*
-    
+    (println "Embla starting...")
+        
     ;; REPL?
     (if (true? repl-needed)
       (start-repl))
     ;; Loop start
-    (gameloop)))
+    (try
+      (egl/versions)
+      (egl/opengl-init)
+      (egl/opengl-loop)
+      (finally
+        (egl/opengl-terminate)))))
 
