@@ -1,0 +1,6 @@
+import java.util.List;
+
+public class Signal implements ISignal {
+    private int nextFunctionID;
+    
+}
