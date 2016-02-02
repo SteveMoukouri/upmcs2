@@ -2,7 +2,6 @@
   (:gen-class))
 
 
-
 (defn arity_match [function matching]
   ;; In case we want to check function arity within the signal list.
   ;; Unused atm
@@ -39,8 +38,6 @@
   "Create a sigfun object."
   [name priority arity function]
   '(name priority arity function))
-
-
 
 
 (defn tick-received
@@ -135,12 +132,7 @@
   (let [funlist (get embla-signals signame)]
     (if (nil? funlist)
       (println "Error: no signal matching " signame)
-      (do 
-        (if (nil? sigargs)
-          ;; No arguments for signal
-          (doseq [f funlist] (f))
-          ;; Apply argument list for signal functions
-          (doseq [f funlist] (f)))))))
+      (doseq [f funlist] (f)))))
 
 (defn start-repl
   []
