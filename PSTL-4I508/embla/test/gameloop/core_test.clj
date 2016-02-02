@@ -1,6 +1,6 @@
-(ns clojure-opengl.core-test
+(ns gameloop.core-test
   (:require [clojure.test :refer :all]
-            [clojure-opengl.core :refer :all]))
+            [gameloop.core :refer :all]))
 
 (deftest a-test
   (testing "FIXME, I fail."
