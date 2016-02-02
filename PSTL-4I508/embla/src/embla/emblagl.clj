@@ -9,14 +9,19 @@
 (defn versions
   "Get LWJGL/GLFW versions"
   []
-  (println (str "Using GLFW v" (GLFW/GLFW_VERSION_MAJOR) "." (GLFW/GLFW_VERSION_MINOR) "." (GLFW/GLFW_VERSION_REVISION)))
-  (println (str "Using LWJGL v" (Version/VERSION_MAJOR) "." (Version/VERSION_MINOR) "." (Version/VERSION_REVISION)))
-  )
+  (println (str "Using GLFW v" (GLFW/GLFW_VERSION_MAJOR) "." 
+                (GLFW/GLFW_VERSION_MINOR) "." (GLFW/GLFW_VERSION_REVISION)))
+  (println (str "Using LWJGL v" (Version/VERSION_MAJOR) "." 
+                (Version/VERSION_MINOR) "." (Version/VERSION_REVISION))))
 
+;; Our window. Muy importante.
 (def opengl-window (atom ()))
 
 (defn opengl-init
   "Initialize context etc for openGL display"
+  ;; TODO: 
+  ;;    - make a giant callback for keyboard presses
+  ;;    - make a smaller callback for emitting a time signal
   []
   (let [height 300 width 300 init-result (GLFW/glfwInit)]
     (if (=  init-result GLFW/GLFW_TRUE)
@@ -53,6 +58,6 @@
 (defn opengl-terminate
   "Clean up after the window"
   ;; TODO: 
-  ;;    - A terme - rajouter le release des callbacks et des erreurs
+  ;;    - Eventually release the callbacks.
   []
   (GLFW/glfwTerminate))
