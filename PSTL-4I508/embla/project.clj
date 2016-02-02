@@ -3,7 +3,8 @@
   :url "http://example.com/FIXME"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[org.clojure/clojure "1.7.0"]]
+  :dependencies [[org.clojure/clojure "1.7.0"]
+                 [org.clojure/core.async "0.2.374"]]
     :resource-paths ["lwjgl_jar/lwjgl.jar"]
   :jvm-opts [~(str "-Djava.library.path=lwjgl_native/:"
                    (System/getProperty "java.library.path"))]

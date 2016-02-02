@@ -32,23 +32,23 @@
         ;; Assign window value to atom if created
         (swap! opengl-window (fn [x] window)))
       (let [video-mode (GLFW/glfwGetVideoMode (GLFW/glfwGetPrimaryMonitor))]
-        (GLFW/glfwSetWindowPos (deref opengl-window)
+        (GLFW/glfwSetWindowPos @opengl-window
                                (/ (- (.width video-mode) width) 2) 
                                (/ (- (.height video-mode) height) 2)))
-      (GLFW/glfwMakeContextCurrent (deref opengl-window))
+      (GLFW/glfwMakeContextCurrent @opengl-window)
       (GLFW/glfwSwapInterval 1)
-      (GLFW/glfwShowWindow (deref opengl-window)))))
+      (GLFW/glfwShowWindow @opengl-window))))
 
 (defn opengl-loop
   "OpenGL loop."
   []
   (GL/createCapabilities)
   (GL11/glClearColor 1.0 0.0 0.0 0.0)
-  (while (= (GLFW/glfwWindowShouldClose (deref opengl-window)) GLFW/GLFW_FALSE)
+  (while (= (GLFW/glfwWindowShouldClose @opengl-window) GLFW/GLFW_FALSE)
     (GL11/glClear (bit-or GL11/GL_COLOR_BUFFER_BIT GL11/GL_DEPTH_BUFFER_BIT))
-    (GLFW/glfwSwapBuffers (deref opengl-window))
+    (GLFW/glfwSwapBuffers @opengl-window)
     (GLFW/glfwPollEvents))
-  (GLFW/glfwDestroyWindow (deref opengl-window)))
+  (GLFW/glfwDestroyWindow @opengl-window))
 
 (defn opengl-terminate
   "Clean up after the window"
