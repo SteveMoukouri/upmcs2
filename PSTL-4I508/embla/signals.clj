@@ -33,10 +33,10 @@
                      (range (count signals)))]
     ;; Define a waiting function for every signal
     ;; in the argument list
-    (loop [remaining siglist]
-      (if (empty? remaining)
+    (loop [loop-list siglist]
+      (if (empty? loop-list)
         (chan))
-      (let [[sig & sigs-recur] remaining]
+      (let [[sig & sigs-recur] loop-list]
         (go 
           (let [msg (<! (second sig))]
             ;; if msg's first arrival, incr signal-count
