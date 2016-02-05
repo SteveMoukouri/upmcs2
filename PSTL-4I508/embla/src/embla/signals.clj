@@ -13,7 +13,6 @@
     (go (let [msg (<! signal)] (func msg)))
     chan 
     ))
-        
 
 (defn combine
   "Generates an async channel listening for signals
@@ -28,23 +27,24 @@
   ;; signal list [msg signal signal-localid]
   (let [signal-out (chan)
         siglist-size (count signals)
-        siglist (map (vec (repeat (count signals) nil))
-                     vector signals  
-                     (range (count signals)))]
-    ;; Define a waiting function for every signal
-    ;; in the argument list
+        ;; Vecteur [atom() signal], atom à filer à go
+        ;; TODO: check.
+        siglist (map (fn [s] ([s (atom nil)])) signals)]
+    ;; Define a waiting function for each sig in the argument list
+    ;; => (count signals) waiting processes
     (loop [loop-list siglist]
       (if (empty? loop-list)
         (chan))
       (let [[sig & sigs-recur] loop-list]
         (go 
-          (let [msg (<! (second sig))]
+          (let [msg (<! (second sig))
+                storage (first sig)]
             ;; if msg's first arrival, incr signal-count
             (if (nil?)
               (swap! signal-count incr))
             ;; Put signal in its place either way
-            (alter-var-root (first sig) (fn [x] msg))
-            ;; If the 
+            (swap! storage (fn [x] msg))
+            ;; If the signal has sufficient arguments, send it.
             (if (= @signal-count siglist-size)
-              (>! signal-out (apply func (map siglist (fn [x] (first x))))))))
+              (>! signal-out (apply func (map siglist (fn [x] (@(first x)))))))))
         (recur sigs-recur)))))
