@@ -1,5 +1,69 @@
 #include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
 #include "tools.h"
+
+/**
+ *    Um_code struct and helpers
+ */
+
+Um_code * newPlatter(unsigned int size) {
+  Um_code * result = malloc(sizeof *result);
+  result->code = calloc(size, 4);
+  result->int_size = size;
+  return result;
+}
+
+void destroyCode(Um_code * code) {
+  if (code) {
+    free(code->code);
+    free(code);
+  }
+}
+
+Um_code ** realloc_and_copy(Um_code ** platters, 
+			    unsigned int oldSize, unsigned int newSize) {
+  Um_code ** new_platters = malloc(sizeof(*new_platters) * newSize);
+  for (unsigned int i = 0; i < oldSize; i++) {
+    if (platters[i] != NULL) {
+      unsigned int code_size = platters[i]->int_size; 
+      Um_code * new_code = newPlatter(code_size);
+      memcpy(new_code->code, platters[i]->code, code_size * 4);
+      new_platters[i] = new_code;
+    }
+    destroyCode(platters[i]);
+  }
+  free(platters);
+  return new_platters;
+}
+
+Um_code * readscroll (FILE * fp) {
+  int size;
+  unsigned int * code;
+
+  fseek(fp, 0, SEEK_END);     
+  size = ftell(fp);           
+  fseek(fp, 0, SEEK_SET);     
+
+  code = calloc(size/4, 4);
+  
+  if (fread(code, 4, size/4, fp) != size/4) {
+    fprintf(stderr, "\x1b[31mFile error\x1b[0m\n");
+    exit(1);
+  }
+  for (unsigned int i = 0; i < size / 4; i++) {
+    code[i] = 
+      (code[i] >> 24) |
+      ((code[i] & 0x00FF0000) >> 8) |
+      ((code[i] & 0x0000FF00) << 8) |
+      (code[i] << 24);
+  }
+  Um_code * result = malloc(sizeof *result);
+  result->code = code;
+  result->int_size = size;
+  return result;
+}
+
 
 void destroyFreeQueue(Free_Queue * fq) {
   Free_Queue * tmp;
@@ -9,6 +73,10 @@ void destroyFreeQueue(Free_Queue * fq) {
     fq = tmp;
   }
 }
+
+/**
+ *     Free_Queue struct and helpers
+ */
 
 unsigned int popEltValue(Free_Queue ** fq) {
   Free_Queue * tmp = *fq;

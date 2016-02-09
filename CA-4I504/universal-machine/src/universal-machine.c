@@ -18,74 +18,6 @@
 #define WORDB ((current_word >> 3) & 0x07)
 #define WORDC (current_word & 0x07)
 
-Um_code * newPlatter(unsigned int size) {
-  Um_code * result = malloc(sizeof *result);
-  result->code = calloc(size, 4);
-  result->int_size = size;
-}
-
-void destroyCode(Um_code * code) {
-  if (code) {
-    free(code->code);
-    free(code);
-  }
-}
-
-Um_code ** realloc_and_copy(Um_code ** platters, 
-			    unsigned int oldSize, unsigned int newSize) {
-  Um_code ** new_platters = malloc(sizeof(*new_platters) * newSize);
-  fprintf(stderr, "Begin copy oldSize %u newSize %u\n", oldSize, newSize);
-  for (unsigned int i = 0; i < oldSize; i++) {
-    fprintf(stderr, "Iteration %u, platter size %u\n", i, platters[i]->int_size);
-    if (platters[i] != NULL) {
-      fprintf(stderr, "Inside if\n");
-      unsigned int code_size = platters[i]->int_size; 
-      Um_code * new_code = newPlatter(code_size);
-      fprintf(stderr, "Begin ops\n");
-      new_code->code = malloc(code_size * sizeof(unsigned int));
-      new_code->int_size = code_size;
-      fprintf(stderr, "Begin memcpy\n");
-      memcpy(new_code->code, platters[i]->code, code_size * 4);
-      fprintf(stderr, "Memcpy done\n");
-      new_platters[i] = new_code;
-      fprintf(stderr, "End ops\n");
-    }
-    destroyCode(platters[i]);
-    free(platters);
-  }
-  fprintf(stderr, "End copy\n");
-  return new_platters;
-}
-
-Um_code * readscroll (FILE * fp) {
-  int size;
-  unsigned int * code;
-
-  // Taille du code
-  fseek(fp, 0, SEEK_END);     
-  size = ftell(fp);           
-  fseek(fp, 0, SEEK_SET);     
-
-  // Allocation
-  code = calloc(size/4, 4);
-  
-  // Read //
-  if (fread(code, 4, size/4, fp) != size/4) {
-    fprintf(stderr, "\x1b[31mFile error\x1b[0m\n");
-    exit(1);
-  }
-  for (unsigned int i = 0; i < size / 4; i++) {
-    code[i] = 
-      (code[i] >> 24) |
-      ((code[i] & 0x00FF0000) >> 8) |
-      ((code[i] & 0x0000FF00) << 8) |
-      (code[i] << 24);
-  }
-  Um_code * result = malloc(sizeof *result);
-  result->code = code;
-  result->int_size = size;
-  return result;
-}
 
 void exec(Um_code * code) {
   Um_code ** platters = malloc(sizeof(*platters) * DEFAULT_PLATTERS);
@@ -111,6 +43,9 @@ void exec(Um_code * code) {
       break;
     case AAMD:
       debug("Array amendment");
+      if (platters[registers[WORDA]] == NULL) {
+	fprintf(stderr, "null\n");
+      }
       platters[registers[WORDA]]->code[registers[WORDB]] = registers[WORDC];
       break;
     case ADD:
@@ -132,8 +67,10 @@ void exec(Um_code * code) {
       break;
     case HALT:
       debug("Halt");
+      destroyFreeQueue(spaces);
       for (unsigned int i = 0; i < allocate_max; i++)
-	destroyCode(platters[i]);      
+	destroyCode(platters[i]);
+      free(platters);
       exit(1);
       break;
     case ALLOC:
@@ -147,9 +84,9 @@ void exec(Um_code * code) {
 	position = popEltValue(&spaces);
       } else {
 	if (next_allocate >= allocate_max) {
-	  position = size;
-	  size = size * 2;
-	  platters = realloc_and_copy(platters, size/2, size);
+	  position = allocate_max;
+	  allocate_max *= 2;
+	  platters = realloc_and_copy(platters, allocate_max/2, allocate_max);
 	  next_allocate++;
 	  /*
 	  if (realloc(platters, size) == NULL) {

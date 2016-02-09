@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-std=c11
+CFLAGS=-Wall -std=c11
 SRC=universal-machine.c tools.c
 EXE=universal-machine
 
