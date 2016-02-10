@@ -88,12 +88,6 @@ void exec(Um_code * code) {
 	  allocate_max *= 2;
 	  platters = realloc_and_copy(platters, allocate_max/2, allocate_max);
 	  next_allocate++;
-	  /*
-	  if (realloc(platters, size) == NULL) {
-	    fprintf(stderr, "\x1b[31mMemory reallocation fail\x1b[0m\n");
-	    exit(1);
-	  }
-	  */
 	} else {
 	  position = next_allocate++;
 	}
