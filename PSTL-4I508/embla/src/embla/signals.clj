@@ -28,7 +28,6 @@
   (let [signal-out (chan)
         siglist-size (count signals)
         ;; Vecteur [atom() signal], atom à filer à go
-        ;; TODO: check.
         siglist (map (fn [s] ([s (atom nil)])) signals)]
     ;; Define a waiting function for each sig in the argument list
     ;; => (count signals) waiting processes

@@ -8,7 +8,6 @@
     :resource-paths ["lwjgl_jar/lwjgl.jar"]
   :jvm-opts [~(str "-Djava.library.path=lwjgl_native/:"
                    (System/getProperty "java.library.path"))]
-  :java-source-paths ["src/java"]
   :main ^:skip-aot embla.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}})
