@@ -5,17 +5,12 @@
 (defn -main
   "Launch Embla. REPL live coding optional"
   [& args]
-  (let [repl-needed false]  
-    (println "Embla starting...")
+  (println "Embla starting...")
         
-    ;; REPL?
-    (if (true? repl-needed)
-      (start-repl))
-    ;; Loop start
-    (try
-      (egl/versions)
-      (egl/opengl-init)
-      (egl/opengl-loop)
-      (finally
-        (egl/opengl-terminate)))))
+  (try
+    (egl/versions)
+    (egl/opengl-init)
+    (egl/opengl-loop)
+    (finally
+      (egl/opengl-terminate))))
 

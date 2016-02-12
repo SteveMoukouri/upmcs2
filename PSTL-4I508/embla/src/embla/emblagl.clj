@@ -4,7 +4,7 @@
            org.lwjgl.opengl.GL11
            org.lwjgl.Version
            )
-  (:require [embla.signals :as sigs])
+  ;(:require [embla.signals :as sigs])
   (:gen-class))
 
 
