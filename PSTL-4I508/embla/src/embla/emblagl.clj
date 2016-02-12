@@ -23,8 +23,7 @@
   "If user kept a reference to a callback, he can unset it here"
   [callback]
   (swap! @callback-vector (fn [l] (filter (fn [c] (not= c callback)) l)))
-  (.release callback)
-)
+  (.release callback))
 
 (defn callback-register 
   "Register Java callbacks to release them on exit"

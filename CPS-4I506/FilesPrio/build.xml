@@ -1,0 +1,51 @@
+<project name="filesprio" default="compile" basedir=".">
+    <description>
+        The build file for the FilesPrio project
+    </description>
+  <!-- set global properties for this build -->
+  <property name="src" location="src"/>
+  <property name="bin" location="bin"/>
+
+  <!-- METTRE ICI LE NOM DU BINOME -->
+  <property name="nom1" value="RIBEIRO Cedric"/>
+  <property name="nom2" value="BERTRAN DE BALANDA Jordi"/>
+
+  <target name="init">
+    <!-- Create the time stamp -->
+    <tstamp/>
+    <!-- Create the build directory structure used by compile -->
+    <mkdir dir="${bin}"/>
+  </target>
+
+  <target name="compile" depends="init"
+        description="compile the source " >
+    <!-- Compile the java code from ${src} into ${build} -->
+    <javac debug="true" srcdir="${src}" excludes="" destdir="${bin}" includeantruntime="false" />
+  </target>
+
+  <target name="run" depends="compile"
+          description="run examples">
+          <java classname="filesprio.FilesPrioMain"
+          classpath="${bin}">
+       <arg value="30"/>
+    </java>
+  </target>
+
+  <target name="dist" depends="init,clean"
+        description="Generate distribution distribution" >
+    <!-- tout mettre dans l'archive -->
+    <jar basedir="." jarfile="../TME3-CPS-${nom1}-${nom2}-${DSTAMP}.jar"/>
+  </target>
+
+  <target name="clean"
+        description="clean up" >    
+    <echo>================ Removing temporary files... ================</echo>
+        <delete verbose="true"> <!-- Remove all *~ files -->
+       <fileset dir="${basedir}" defaultexcludes="no">
+             <include name="**/*~"/>
+           </fileset>
+        </delete>
+        <echo>================ Removing build directory ================</echo>    
+    <delete dir="${bin}"/>
+  </target>
+</project>

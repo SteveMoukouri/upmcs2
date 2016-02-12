@@ -2,7 +2,8 @@ package algorithms;
 
 import java.awt.Point;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+
 import java.util.Random;
 
 /***************************************************************
@@ -29,10 +30,11 @@ import supportGUI.Line;
 
 public class DefaultTeam {
 
+    Random generator = new Random();
+
 	// calculDiametre: ArrayList<Point> --> Line
 	//   renvoie une pair de points de la liste, de distance maximum.
 	public Line calculDiametre(ArrayList<Point> pts) {
-		Random generator = new Random(System.currentTimeMillis());
 		
 		ArrayList<WrapperPoint> points = new ArrayList<WrapperPoint>();
 		for (Point p : pts)
@@ -41,17 +43,29 @@ public class DefaultTeam {
 		if (points.size()<3) {
 			return null;
 		}
-		
-		/*
-		Point p=points.get(0);
-		Point q=points.get(1);
-		*/
-		
-		/**
-		 * Algo naïf
-		 */
-		
-		
+
+		return diametreNaif(points);
+	}
+	
+	public Line diametrePrecalc(ArrayList<WrapperPoint> points) {
+		WrapperPoint p = popRandom(points);
+		WrapperPoint q = popRandom(points);
+		double distance = p.distance(q);
+		while (points.size() > 0) {
+			WrapperPoint x = popRandom(points);
+			if (x.distance(p) > distance) {
+				p = x;
+				distance = x.distance(p);
+			}
+			if (x.distance(q) > distance) {
+				q = x;
+				distance = x.distance(q);
+			} 
+		}
+		return new Line(p.toPoint(), q.toPoint());
+	}
+	
+	public Line diametreNaif(ArrayList<WrapperPoint> points) {
 		double diametre = 0;
 		WrapperPoint p_acc = null;
 		WrapperPoint q_acc = null;
@@ -66,88 +80,30 @@ public class DefaultTeam {
 				}
 			}
 		return new Line(p_acc.toPoint(), q_acc.toPoint());
-		
-		
-		/**
-		 * Algo précalcul
-		 */
-		
-		/**
-		WrapperPoint p = popRandom(points, generator.nextInt());
-		WrapperPoint q = popRandom(points, generator.nextInt());
-		double distance = p.distance(q);
-		while (points.size() > 0) {
-			WrapperPoint x = popRandom(points, generator.nextInt());
-			if (x.distance(p) > distance) {
-				p = x;
-				distance = x.distance(p);
-			}
-			if (x.distance(q) > distance) {
-				q = x;
-				distance = x.distance(q);
-			} 
-		}
-		return new Line(p.toPoint(), q.toPoint());
-		**/
 	}
 	
 	// calculCercleMin: ArrayList<Point> --> Circle
 	//   renvoie un cercle couvrant tout point de la liste, de rayon minimum.
 	public Circle calculCercleMin(ArrayList<Point> pts) {
+		if (pts.isEmpty()) {
+			return null;
+		}
+		ArrayList<WrapperPoint> points = new ArrayList<>();
+		for (Point p : pts)
+			points.add(new WrapperPoint(p.getX(), p.getY()));
+		return randomRitter(points);
+	}
+	
+	/**
+	 * Ritter initialisé par calcul du diamètre
+	 * @param pts La liste de points
+	 * @return Une approximation du cercle minimum.
+	 */
+	public Circle diametreRitter(ArrayList<Point> pts) {
+		Line l = calculDiametre(pts);
 		ArrayList<WrapperPoint> points = new ArrayList<WrapperPoint>();
 		for (Point p : pts)
 			points.add(new WrapperPoint(p.getX(), p.getY()));
-		if (points.isEmpty()) {
-			return null;
-		}
-
-		/**
-		 * Algo naïf 
-		 *
-		Point center=points.get(0);
-		int radius=100;
-		
-		
-		for (Point p : points) {
-			for (Point q : points) {
-				Circle c = new Circle(new Point((p.x + q.x)/2, (p.y+q.y)/2), radius(p, q));
-				if (containsAll(points, c))
-					System.out.println("lol");
-					return c;
-			}
-		}
-		for (Point p : points) {
-			for (Point q : points) {
-				for (Point r : points) {
-					
-				}
-			}
-		}
-		
-		*
-		*/
-		
-		/**
-		 * Algorithme de Ritter 
-		 */
-		
-		Random generator = new Random(System.currentTimeMillis());
-		
-		/**
-		 * Etapes aléatoires 
-		 */
-		/*
-		WrapperPoint dummy = popRandom(points, generator.nextInt());
-		WrapperPoint p = popFurthest(points, dummy);
-		WrapperPoint q = popFurthest(points, p);
-		*/
-		
-		/**
-		 * Etapes naïves (diamètre)
-		 */
-		
-		
-		Line l = calculDiametre(pts);
 		WrapperPoint p = new WrapperPoint(l.getP().getX(), l.getP().getY());
 		WrapperPoint q = new WrapperPoint(l.getQ().getX(), l.getQ().getX());
 		
@@ -158,7 +114,43 @@ public class DefaultTeam {
 		popPoint(points, q);
 		while (points.size() > 0) {
 			
-			WrapperPoint s = chooseRandom(points, generator.nextInt());
+			WrapperPoint s = chooseRandom(points);
+			
+			if (circle.contains(s))
+				popPoint(points, s);
+			else {
+				double rad = (circle.getCenter().distance(s) + circle.getRadius())/2;
+				double cx = circle.getCenter().getX();
+				double cy = circle.getCenter().getY();
+				double al = rad/circle.getCenter().distance(s);
+				double be = (circle.getCenter().distance(s) - rad)
+						/circle.getCenter().distance(s);
+				double cxnew = al*cx + be*s.getX();
+				double cynew = al*cy + be*s.getY(); 
+				
+				circle = new WrapperCircle(new WrapperPoint(cxnew, cynew), rad);
+			}
+		}
+		return circle.toCircle();
+	}
+
+	/**
+	 * Ritter avec initialisation aléatoire
+	 * @param points La liste de points
+	 * @return Une approximation du cercle minimum
+	 */
+	public Circle randomRitter(ArrayList<WrapperPoint> points) {
+		WrapperPoint dummy = popRandom(points);
+		WrapperPoint p = popFurthest(points, dummy);
+		WrapperPoint q = popFurthest(points, p);
+		WrapperPoint c = new WrapperPoint((p.getX()+q.getX())/2,
+				(p.getY()+q.getY())/2);
+		WrapperCircle circle = new WrapperCircle(c, c.distance(p));
+		popPoint(points, p);
+		popPoint(points, q);
+		while (points.size() > 0) {
+			
+			WrapperPoint s = chooseRandom(points);
 			
 			if (circle.contains(s))
 				popPoint(points, s);
@@ -178,146 +170,130 @@ public class DefaultTeam {
 		return circle.toCircle();
 	}
 	
-	private List<WrapperPoint> filtrageAKL(List<WrapperPoint> points) {
-		/* Points extrêmes */ 
-		WrapperPoint a, b, c, d;
-		a = b = c = d = null;
-		double ordmin, ordmax, absmin, absmax;
-		ordmin = ordmax = absmin = absmax = 0;
-		for (WrapperPoint p : points) {
-			// Abs min
-			if (a == null || p.getX() < absmin) {
+	/**
+	 * Ne pas utiliser
+	 * @param points La liste de points
+	 * @return Le cercle minimum exact.
+	 */
+	public Circle cercleNaif(ArrayList<WrapperPoint> points) { return null; } 
+	
+	/**
+	 * Ritter aléatoire avec filtrage AKL naif
+	 * @param points
+	 * @return
+	 */
+	public Circle aklNaif(ArrayList<WrapperPoint> points) {
+		WrapperPoint a = null, b = null, c = null, d = null;
+		for (WrapperPoint p : points) { 
+			if (a == null || p.getX() < a.getX())
 				a = p;
-				absmin = p.getX();
-			}
-			// Ord min
-			if (b == null || p.getX() > absmax) {
+			if (b == null || p.getY() < b.getY())
 				b = p;
-				absmax = p.getX();
-			}
-			// Abs max
-			if (c == null || p.getY() < ordmin) {
+			if (c == null || p.getX() > c.getX())
 				c = p;
-				ordmin = p.getY();
-			}
-			// Ord max
-			if (d == null || p.getY() > ordmax) {
+			if (d == null || p.getY() > d.getY())
 				d = p;
-				ordmax = p.getY();
+		}
+		for (WrapperPoint x: points) {
+			double ab = a.distance(b), ac = a.distance(c), ad = a.distance(d);
+			double bc = b.distance(c), cd = c.distance(d);
+			double s1 = (ab + bc + ac) / 2, s2 = (ac + cd + ad) / 2;
+			double ax = a.distance(x), bx = b.distance(x), cx = c.distance(x), dx = d.distance(x);
+			double totsq1 = trAreaSq(s1, ab, bc, ac);
+			double totsq2 = s2 * (s2 - ac) * (s2 - cd) * (s2 - ad);
+			double s1x1 = (ab + bx + ax) / 2, s1x2 = (bc + cx + bx) / 2, s1x3 = (ac + cx + ax) / 2;
+			double s2x1 = (ac + ax + cx) / 2, s2x2 = (cd + dx + cx) / 2, s2x3 = (1) / 2;
+			double sum1 = trAreaSq(s1x1, ab, bx, ax) + trAreaSq(s1x2, bc, bx, cx) + trAreaSq(s1x3, ac, cx, ax);
+			double sum2 = trAreaSq(s2x1, ac, ax, cx) + trAreaSq(s2x2, cd, dx, cx) + trAreaSq(s2x3, ad, dx, ax);
+			if (sum1 == totsq1 || sum2 == totsq2) {
+				popPoint(points, x);
 			}
 		}
-		// points = filtrageHeron(points, a, b, c, d);
-		// points = filtrageVect(points, a, b, c, d);
-		points = filtrageBary(points, a, b, c, d);
-		return points; 
+		return randomRitter(points);
 	}
 	
-	/* Ex8 q3 */
-	private List<WrapperPoint> filtrageBary(List<WrapperPoint> points,
-			WrapperPoint a, WrapperPoint b, WrapperPoint c, WrapperPoint d) {
-		for (WrapperPoint p : points) {
-			if (barycentres(a, b, c, p) || barycentres(a, c, d, p)) 
-				popPoint(points, p);
+	/**
+	 * Ritter aléatoire avec filtrage akl barycentrique
+	 * @param points
+	 * @return
+	 */
+	public Circle aklBary(ArrayList<WrapperPoint> points) {
+		WrapperPoint a = null, b = null, c = null, d = null;
+		for (WrapperPoint p : points) { 
+			if (a == null || p.getX() < a.getX())
+				a = p;
+			if (b == null || p.getY() < b.getY())
+				b = p;
+			if (c == null || p.getX() > c.getX())
+				c = p;
+			if (d == null || p.getY() > d.getY())
+				d = p;
 		}
-		return points;
-	}
-	
-	private boolean barycentres(WrapperPoint a, WrapperPoint b, WrapperPoint c,
-			WrapperPoint x) {
-		double l1 = 
-				((b.getY() - c.getY()) * (x.getX() - c.getX()) + 
-						(c.getX() - b.getX()) * (x.getY() - c.getY())) 
-						/ 
-				((b.getY() - c.getY()) * (a.getX() - c.getX()) + 
-						(c.getX() - b.getX()) * (a.getY() - c.getY()));
-		double l2 =
-				((c.getY() - a.getY()) * (x.getX() - c.getX()) + 
-						(a.getX() - c.getX()) * (x.getY() - c.getY())) 
-						/ 
-				((b.getY() - c.getY()) * (a.getX() - c.getX()) + 
-						(c.getX() - b.getX()) * (a.getY() - c.getY()));
-		double l3 = 1 - l1 - l2;
-		return ((l1 <= 1 && l2 <= 1 && l3 <= 1) && (l1 >= 0 && l2 >= 0 && l3 >= 0));
-	}
-	
-	/* Ex8 q2 */
-	private List<WrapperPoint> filtrageVect(List<WrapperPoint> points, 
-			WrapperPoint a, WrapperPoint b, WrapperPoint c, WrapperPoint d) {
-		/* Triangle ABC*/ 
-		double abac = thirdCoord(a, b, a, c);
-		double bcba = thirdCoord(b, c, b, a);
-		double acab = thirdCoord(a, c, a, b);
-		/* Triangle ACD */	
-		double acad = thirdCoord(a, c, a, d);
-		double cdca = thirdCoord(c, d, c, a);
-		double adac = thirdCoord(a, d, a, c);
-		for (WrapperPoint p : points) {
-			/* Triangle ABC */ 
-			double abap = thirdCoord(a, b, a, p);
-			double bcbp = thirdCoord(b, c, b, p);
-			double acap = thirdCoord(a, c, a, p);
-			/* Triangle ACD */
-			double cdcp = thirdCoord(c, d, c, p);
-			double adap = thirdCoord(a, d, a, p);
-			boolean isabc = sameSign(abac, abap) && sameSign(bcba, bcbp) &&
-					sameSign(acab, acap);
-			boolean isacd = sameSign(acad, acap) && sameSign(cdca, cdcp) &&
-					sameSign(adac, adap);
-			if (isabc || isacd) 
-				popPoint(points, p);
+		for (WrapperPoint x: points) {
+			// l1 = ((B.y − C.y) ∗ (X.x − C.x) + (C.x − B.x) ∗ (X.y − C.y))/((B.y − C.y) ∗ (A.x − C.x) + (C.x − B.x) ∗ (A.y − C.y))
+			double l11 = ((b.getY() - c.getY()) * (x.getX() - c.getX()) + (c.getX() - b.getX()) * (x.getY() - c.getY()))/
+					((b.getY() - c.getY()) * (a.getX() - c.getX()) + (c.getX() - b.getX()) * (a.getY() - c.getY()));
+			double l12 = ((c.getY() - a.getY()) * (x.getX() - c.getX()) + (a.getX() - c.getX()) * (x.getY() - c.getY()))/
+					((b.getY() - c.getY()) * (a.getX() - c.getX()) + (c.getX() - b.getX()) * (a.getY() - c.getY()));
+			double l13 = 1 - l11 - l12;
+			double l21 = ((c.getY() - d.getY()) * (x.getX() - d.getX()) + (d.getX() - c.getX()) * (x.getY() - d.getY()))/
+					((c.getY() - d.getY()) * (a.getX() - d.getX()) + (d.getX() - c.getX()) * (a.getY() - d.getY()));
+			double l22 = ((d.getY() - a.getY()) * (x.getX() - d.getX()) + (a.getX() - d.getX()) * (x.getY() - d.getY()))/
+					((c.getY() - d.getY()) * (a.getX() - d.getX()) + (d.getX() - c.getX()) * (a.getY() - d.getY()));
+			double l23 = 1 - l21 - l22;
+			if (zeroToOne(l11, l12, l13) || zeroToOne(l21, l22, l23))
+				popPoint(points, x);
 		}
-		return points;
+		return randomRitter(points);
 	}
 	
-	private boolean sameSign(double a, double b) {
-		return ((a >= 0 && b >= 0) || (a < 0 && b < 0));
+	private boolean zeroToOne(double a, double b, double c) {
+		return (a >= 0 && b >= 0 && c >= 0 && a <= 1 && b <= 1 && c <= 1);
 	}
 	
-	private double thirdCoord(WrapperPoint a1, WrapperPoint a2, 
-			WrapperPoint b1, WrapperPoint b2) {
-		double ux = a2.getX() - a1.getX();
-		double uy = a2.getY() - a1.getY();
-		double vx = b2.getX() - b1.getY();
-		double vy = b2.getY() - b1.getY();
-		return (ux * vy) - (uy * vx);
+	private double trAreaSq(double s, double a, double b, double c) {
+		return s * (s - a) * (s - b) * (s - c);
 	}
 	
-	/* Ex8 q1*/
-	private List<WrapperPoint> filtrageHeron(List<WrapperPoint> points,
-			WrapperPoint a, WrapperPoint b, WrapperPoint c, WrapperPoint d) {
-		double aire2_abc = heron(a, b, c);
-		double aire2_acd = heron(a, c, d); 
-		for (WrapperPoint p : points) {
-			double total = heron(a, b, p) + heron(b, c, p) + heron(a, c, p);
-			if (aire2_abc == total || aire2_acd == total) {
-				popPoint(points, p);
-			}
-		}
-		return points;
-	}
-	
-	private double heron(WrapperPoint a, WrapperPoint b, WrapperPoint c) {
-		double ab = a.distance(b);
-		double ac = a.distance(c);
-		double bc = b.distance(c);
-		double abc_s = (ab + ac + bc)/2; 
-		return abc_s * (abc_s - ab) * (abc_s - ac) * (abc_s - bc);
-	}
-	
-	private void popPoint(List<WrapperPoint> points, WrapperPoint p) {
+	/**
+     * Retire de la liste points le point p
+     * @param points La liste de points
+     * @param p Le point à retirer
+     */
+	private void popPoint(ArrayList<WrapperPoint> points, WrapperPoint p) {
 		points.remove(p);
 	}
-	
-	private WrapperPoint popRandom(List<WrapperPoint> points, int rnd) {
-		WrapperPoint p = points.remove(Math.abs(rnd) % points.size());
+
+    /**
+     * Retire de la liste de points un point à l'index rnd
+     * @param points La liste de points
+     * @param rnd Le nombre aléatoire
+     * @return Le point aléatoire
+     */
+	private WrapperPoint popRandom(ArrayList<WrapperPoint> points) {
+		int pos = generator.nextInt(points.size());
+		WrapperPoint p = points.remove(pos);		
 		return p;
 	}
-	
-	private WrapperPoint chooseRandom(List<WrapperPoint> points, int rnd) {
-		return points.get(Math.abs(rnd) % points.size());
+
+    /**
+     * Choisit un point à l'index rnd dans la liste points
+     * @param points La liste de points
+     * @param rnd Le nombre aléatoire
+     * @return Le point aléatoire
+     */
+	private WrapperPoint chooseRandom(ArrayList<WrapperPoint> points) {
+		int pos = generator.nextInt();
+		return points.get(pos);
 	}
-	
-	private WrapperPoint popFurthest(List<WrapperPoint> points, WrapperPoint c) {
+
+    /**
+     * Retire de la liste de points le plus loin du point c
+     * @param points La liste de points
+     * @param c Le point c
+     * @return Le point le plus loin
+     */
+	private WrapperPoint popFurthest(ArrayList<WrapperPoint> points, WrapperPoint c) {
 		double d = 0;
 		WrapperPoint f_acc = null;
 		for (WrapperPoint p : points) {
@@ -329,8 +305,14 @@ public class DefaultTeam {
 		points.remove(f_acc);
 		return f_acc;
 	}
-	
-	private boolean containsAll(List<WrapperPoint> points, WrapperCircle c) {
+
+    /**
+     * Vérifie l'appartenance d'une liste de points au cercle c
+     * @param points La liste de points
+     * @param c Le cercle c
+     * @return Vrai si tous les points sont contenus dans c.
+     */
+	private boolean containsAll(ArrayList<WrapperPoint> points, WrapperCircle c) {
 		for (WrapperPoint p : points) {
 			if (p.distance(c.getCenter()) <= c.getRadius())
 				return false;
