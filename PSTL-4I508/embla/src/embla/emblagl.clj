@@ -31,7 +31,7 @@
   (GLFW/glfwSetKeyCallback window callback)
   (swap! callback-vector (fn [l] (cons callback l))))
 
-(defn callback-make
+(defn keycallback-make
   "Create a Java GLFWKeyCallback with passed key treatment function"
   [window function]
   (proxy [org.lwjgl.glfw.GLFWKeyCallback] []
@@ -65,7 +65,7 @@
         (swap! glfw-win (fn [x] window)))
       ;; ESC quits the window
       (let [callback
-            (callback-make @glfw-win escape-to-quit)]                        
+            (keycallback-make @glfw-win escape-to-quit)]                        
         (GLFW/glfwSetKeyCallback @glfw-win callback))
       (let [video-mode (GLFW/glfwGetVideoMode (GLFW/glfwGetPrimaryMonitor))]
         (GLFW/glfwSetWindowPos @glfw-win
