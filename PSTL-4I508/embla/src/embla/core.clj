@@ -1,5 +1,6 @@
 (ns embla.core
-  (:require [embla.emblagl :as egl])
+  (:require [embla.emblagl :as egl]
+            [embla.signals :as sig])
   (:gen-class))
 
 (defn -main

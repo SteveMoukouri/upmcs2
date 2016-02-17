@@ -34,9 +34,12 @@
 (defn keycallback-make
   "Create a Java GLFWKeyCallback with passed key treatment function"
   [window function]
-  (proxy [org.lwjgl.glfw.GLFWKeyCallback] []
-    (invoke [window key scancode action mods]
-      (function window key scancode action mods))))
+  (let [callback 
+        (proxy [org.lwjgl.glfw.GLFWKeyCallback] []
+          (invoke [window key scancode action mods]
+            (function window key scancode action mods)))]
+    (callback-register window callback)
+    callback))
 
 (defn escape-to-quit
   [window key scancode action mods]
