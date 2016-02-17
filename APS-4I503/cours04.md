@@ -41,14 +41,14 @@ Sémantique: si r, m ⊢ cs ~> m' alors r, m ⊢ [cs] ~> **m'/r**
 ##### Syntaxe
 ```
 Expr ::= ..
-       | '[' TypIds ']' Expr
+       | '[' TypeIds ']' Expr
        | '(' Exprs ')'
 
 Exprs ::=  Expr
         | Expr Exprs
 
-TypIds ::= ident ':' type
-         | ident ':' type ';' TypIds
+TypeIds ::= ident ':' type
+         | ident ':' type ';' TypeIds
 ```
 
 ##### Exemple
