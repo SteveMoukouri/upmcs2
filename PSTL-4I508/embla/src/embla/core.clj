@@ -14,4 +14,3 @@
     (egl/opengl-loop)
     (finally
       (egl/opengl-terminate))))
-

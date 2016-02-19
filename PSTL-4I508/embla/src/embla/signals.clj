@@ -2,15 +2,30 @@
   (:require [clojure.core.async 
              :as async
              :refer [>! <! >!! <!! go chan buffer close! thread
-                     alts! alts!! timeout]])
+                     alts! alts!! timeout]]
+            [embla.callbacks :as cbacks])
   (:gen-class))
 
+(def signal-vector (atom ()))
+(def sig-kb-output (chan))
+(def sig-time (chan))
+
+(defn kb-listener-action
+  [window key scancode action mods]
+  (>! sig-kb-output (vector key action)))
+
+(defn signal-register
+  "Add a signal to the list of channels to close
+  when terminating"
+  [signal]
+  (swap! signal-vector (fn [l] (cons signal l))))
+
 (defn combine1
-    ;; ('a -> 'b) -> signal 'a -> signal 'b
+  "('a -> 'b) -> signal 'a -> signal 'b"
   [func signal]
   (let [channel (chan)]
     (go (let [msg (<! signal)] (func msg)))
-    chan))
+    channel))
 
 (defn combine
   "Generates an async channel listening for signals
@@ -20,7 +35,7 @@
   (let [signal-out (chan)
         siglist-size (count signals)
         ;; [atom signal] vector, pass atom to go for each signal
-        siglist (map (fn [s] ([(atom nil) s])) signals)]
+        siglist (map (fn [s] (vector (atom nil) s)) signals)]
     ;; Define a waiting function for each sig in the argument list
     ;; => (count signals) waiting processes
     (loop [loop-list siglist]
@@ -39,3 +54,16 @@
             (if (= @signal-count siglist-size)
               (>! signal-out (apply func (map siglist (fn [x] (@(first x)))))))))
         (recur sigs-recur)))))
+
+(defn default-signals-init
+  []
+  ;; TODO: actual callback-to-signal management (?) 65-90
+  (combine
+   (fn [key action]
+     (case key 
+       GLFW/GLFW_KEY_A (print "Key: A ")
+       GLFW/GLFW_KEY_Z (print "Key: Z "))
+     (case action
+       GLFW/GLFW_RELEASE (println "Action: release")
+       GLFW/GLFW_PRESS (println "Action: press")))
+   sig-kb-output))
