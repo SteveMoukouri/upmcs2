@@ -24,6 +24,10 @@ public class Point {
 				(this.getY() - p.getY())*(this.getY() - p.getY()));
 	}
 	
+	public double distance(Point p) {
+		return Math.sqrt(this.distanceSq(p));
+	}
+	
 	public Point vector(Point p) {
 		return new Point(p.getX()-this.getX(), p.getY()-this.getY());
 	}

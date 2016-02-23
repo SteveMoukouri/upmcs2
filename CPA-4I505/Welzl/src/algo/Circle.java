@@ -20,36 +20,39 @@ public class Circle {
 	
 	public Circle(Point a, Point b) {
 		this.center = new Point((a.getX()+b.getX())/2, (a.getY()+b.getY())/2);
-		this.radius = Math.sqrt(a.distanceSq(b)) / 2;
+		this.radius = a.distance(b) / 2;
 	}
 	
-	// A REFAIRE
-	public Circle(Point a, Point b, Point c) {
-		double ux = (a.getX() + b.getX() + c.getX())/3;
-		double uy = (a.getY() + b.getY() + c.getY())/3;
-		this.center = new Point((int)(ux), (int)(uy));
-		this.radius = Math.sqrt(a.distanceSq(this.center));
+	private static boolean sameLine(Point a, Point b, Point c) {
+		return (a.getX()*(b.getY()-c.getY())
+				+b.getX()*(c.getY()-a.getY())
+				+c.getX()*(a.getY()-b.getY()) == 0);
 	}
 	
-	// A REFAIRE
+	public static Circle circumCircle(Point a, Point b, Point c) {
+		if (sameLine(a, b, c))
+			return new Circle(0, 0, 0);
+		double ux = (a.getX()*a.getX()+a.getY()*a.getY())*(b.getY()-c.getY())+
+				(b.getX()*b.getX()+b.getY()*b.getY())*(c.getY()-a.getY())+
+				(c.getX()*c.getX()+c.getY()*b.getY())*(a.getY()-b.getY());
+		double uy = (a.getX()*a.getX()+a.getY()*a.getY())*(c.getX()-b.getX())+
+				(b.getX()*b.getX()+b.getY()*b.getY())*(a.getX()-c.getX())+
+				(c.getX()*c.getX()+c.getY()*b.getY())*(b.getX()-a.getX());
+		double d = 2*(a.getX()*(b.getY()-c.getY())+
+				b.getX()*(c.getY()-a.getY())+
+				c.getX()*(a.getY()-b.getY()));
+		Point p = new Point((int)(ux/d), (int)(uy/d));
+		return new Circle(p, p.distance(b));
+	}
+	
 	public static Circle computeBounds(ArrayList<Point> points) {
-		if (points.size() > 3) {
-			double uxs = 0, uys = 0;
-			for (Point p : points) {
-				uxs += p.getX();
-				uys += p.getY();
-			}
-			return new Circle((int)uxs, (int)uys, Math.sqrt(points.get(0).distanceSq(points.get(1)))/2);
-		}
-		else if (points.size() == 3) {
-			double ux = (points.get(0).getX() + points.get(1).getX() + points.get(2).getX())/3;
-			double uy = (points.get(0).getY() + points.get(1).getY() + points.get(2).getY())/3;
-			return new Circle((int)(ux), (int)(uy), Math.sqrt(points.get(0).distanceSq())));
+		if (points.size() == 3) {
+			return circumCircle(points.get(0), points.get(1), points.get(2));
 		}
 		else if (points.size() == 2){
 			return new Circle(points.get(0), points.get(1));
 		} else {
-			return null;
+			return new Circle(0, 0, 0);
 		}
 	}
 	

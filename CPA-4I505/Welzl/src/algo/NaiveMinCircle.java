@@ -10,35 +10,38 @@ public class NaiveMinCircle implements MinCircleSolver {
 
 	@Override
 	public Circle getMinCircle(ArrayList<Point> points) {
-		points = Tools.aklPreCalc(points);
+		// points = Tools.aklPreCalc(points);
 		
-		double diam = -1;
-		if (points.size() <= 2) 
-			return new Circle(new Point(-1, -1), -2);
+		double diam = Double.POSITIVE_INFINITY;
 		Circle c = null;
+		if (points.size() <= 2) 
+			return new Circle(new Point(-1, -1), -1);
+		
 		for (Point p : points) {
 			for (Point q: points) {
-				if (p == q) break;
+				if (p == q) continue;
 				Circle ctmp = new Circle(p, q);
 				if (ctmp.containsAll(points)) {
-					if (diam == -1 || diam > ctmp.getRadius()) {
+					if (diam > ctmp.getRadius()) {
 						c = ctmp;
-						diam = ctmp.getRadius();
+						diam = ctmp.getRadius(); 
 					}
 				}
 			}
 		}
+		
+		if (c != null)
+			return c;
+		
 		for (Point p : points) {
 			for (Point q : points) {
-				if (q == p) break;
+				if (q == p) continue;
 				for (Point r : points) {
-					if (r == q || r == p) {
-						break;
-					}
+					if (r == q || r == p) continue;
 					try {
-						Circle ctmp = new Circle(p, q, r);
+						Circle ctmp = Circle.circumCircle(p, q, r);
 						if (ctmp.containsAll(points)) {
-							if (diam == -1 || diam > ctmp.getRadius()) {
+							if (diam > ctmp.getRadius()) {
 								c = ctmp;
 								diam = ctmp.getRadius();
 							}

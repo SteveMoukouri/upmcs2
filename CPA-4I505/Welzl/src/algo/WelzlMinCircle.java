@@ -36,12 +36,14 @@ public class WelzlMinCircle implements MinCircleSolver {
 			c = Circle.computeBounds(border);
 		}
 		else {
-			Point rnd = randomPoint(points);
-			points.remove(rnd);
-			c = boundingMinDisk(points, border);
+			ArrayList<Point> newPoints = new ArrayList<Point>(points);
+			Point rnd = randomPoint(newPoints);
+			newPoints.remove(rnd);
+			c = boundingMinDisk(newPoints, border);
 			if (!c.contains(rnd)) {//(c!=null) && (!c.contains(rnd))) {
-				border.add(rnd);
-				c = boundingMinDisk(points, border);
+				ArrayList<Point> newBorder = new ArrayList<Point>(border); 
+				newBorder.add(rnd);
+				c = boundingMinDisk(newPoints, newBorder);
 			}
 		}
 		return c;

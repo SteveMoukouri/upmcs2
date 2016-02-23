@@ -15,10 +15,8 @@ public class AlgoTests {
 			System.out.println("Welzl <sample_dir> <output_file>");
 			System.exit(0);
 		} else {
-			MinCircleSolver s = new WelzlMinCircle();
+			MinCircleSolver s = new NaiveMinCircle();
 			writeCircles(args, s);
-
-			// writeTimes(args);
 		}
 	}
 	
@@ -64,7 +62,7 @@ public class AlgoTests {
 				}
 			});
 			long t = System.currentTimeMillis();
-			for (int i = 0; i < samples.size(); i++) {
+			for (int i = 0; i < 10; i++) {
 				ArrayList<Point> pl = Tools.readPoints(samples.get(i));
 				writer.write(samples.get(i).getName().replace(".points", "") 
 						+ " " + solver.getMinCircle(pl) + "\n");
