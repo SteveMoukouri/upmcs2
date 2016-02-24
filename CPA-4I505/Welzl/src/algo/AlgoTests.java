@@ -15,7 +15,7 @@ public class AlgoTests {
 			System.out.println("Welzl <sample_dir> <output_file>");
 			System.exit(0);
 		} else {
-			MinCircleSolver s = new NaiveMinCircle();
+			MinCircleSolver s = new WelzlMinCircle();
 			writeCircles(args, s);
 		}
 	}

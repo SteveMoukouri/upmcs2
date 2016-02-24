@@ -6,8 +6,6 @@ public class Circle {
 	private Point center;
 	private double radius;
 	
-	public Circle() { this.center = null; this.radius = -1; }
-	
 	public Circle(Point center, double radius) {
 		this.center = center;
 		this.radius = radius;
@@ -42,7 +40,7 @@ public class Circle {
 				b.getX()*(c.getY()-a.getY())+
 				c.getX()*(a.getY()-b.getY()));
 		Point p = new Point((int)(ux/d), (int)(uy/d));
-		return new Circle(p, p.distance(b));
+		return new Circle(p, p.distance(a));
 	}
 	
 	public static Circle computeBounds(ArrayList<Point> points) {
@@ -57,7 +55,7 @@ public class Circle {
 	}
 	
 	public boolean contains(Point p) {
-		return center.distanceSq(p) <= (radius*radius);
+		return this.center.distanceSq(p) <= (radius*radius);
 	}
 	
 	public boolean containsAll(ArrayList<Point> points) {

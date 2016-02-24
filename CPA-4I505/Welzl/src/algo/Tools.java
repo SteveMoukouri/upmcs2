@@ -30,32 +30,38 @@ public class Tools {
 	 * @return
 	 */
 	public static ArrayList<Point> aklPreCalc(ArrayList<Point> points) {
-		Point a = null, b = null, c = null, d = null;
+		System.out.println("Before: " + points.size());
+		Point a = points.get(0), b = points.get(0), c = points.get(0), d = points.get(0);
 		for (Point p : points) { 
-			if (a == null || p.getX() < a.getX())
+			if (p.getX() < a.getX())
 				a = p;
-			if (b == null || p.getY() < b.getY())
-				b = p;
-			if (c == null || p.getX() > c.getX())
-				c = p;
-			if (d == null || p.getY() > d.getY())
+			if (p.getY() < d.getY())
 				d = p;
+			if (p.getX() > c.getX())
+				c = p;
+			if (p.getY() > b.getY())
+				b = p;
 		}
 		for (Iterator<Point> iterator = points.iterator(); iterator.hasNext();) {
 			Point p = iterator.next();
-			double l11 = ((b.getY() - c.getY()) * (p.getX() - c.getX()) + (c.getX() - b.getX()) * (p.getY() - c.getY()))/
-					((b.getY() - c.getY()) * (a.getX() - c.getX()) + (c.getX() - b.getX()) * (a.getY() - c.getY()));
-			double l12 = ((c.getY() - a.getY()) * (p.getX() - c.getX()) + (a.getX() - c.getX()) * (p.getY() - c.getY()))/
-					((b.getY() - c.getY()) * (a.getX() - c.getX()) + (c.getX() - b.getX()) * (a.getY() - c.getY()));
-			double l13 = 1 - l11 - l12;
-			double l21 = ((c.getY() - d.getY()) * (p.getX() - d.getX()) + (d.getX() - c.getX()) * (p.getY() - d.getY()))/
-					((c.getY() - d.getY()) * (a.getX() - d.getX()) + (d.getX() - c.getX()) * (a.getY() - d.getY()));
-			double l22 = ((d.getY() - a.getY()) * (p.getX() - d.getX()) + (a.getX() - d.getX()) * (p.getY() - d.getY()))/
-					((c.getY() - d.getY()) * (a.getX() - d.getX()) + (d.getX() - c.getX()) * (a.getY() - d.getY()));
-			double l23 = 1 - l21 - l22;
-			if (!(zeroToOne(l11, l12, l13) || zeroToOne(l21, l22, l23)))
+			int ax = a.getX(), ay = a.getY(), bx = b.getX(), by = b.getY();
+			int cx = c.getX(), cy = c.getY(), dx = d.getX(), dy = d.getY();
+			int px = p.getX(), py = p.getY();
+			double l11 = (((by-cy)*(px-cx))+((cx-bx)*(py-cy))) /
+					(((by-cy)*(ax-cx))+((cx-bx)*(ay-cy)));
+			double l12 = (((cy-ay)*(px-cx))+((ax-cx)*(py-cy))) /
+					(((by-cy)*(ax-cx))+((cx-bx)*(ay-cy)));
+			double l13 = 1-l11-l12;
+			double l21 = (((cy-dy)*(px-dx))+((dx-cx)*(py-dy))) / 
+					(((cy-dy)*(ax-dx))+((dx-cx)*(ay-dy)));
+			double l22 = (((dy-ay)*(px-dx))+((ax-dx)*(py-dy))) /
+					(((cy-dy)*(ax-dx))+((dx-cx)*(ay-dy)));
+			double l23 = 1-l21-l22;
+			System.out.println("abc:" + l11 + "," + l12 + "," + l13 + "\nacd:" + l21 + "," + l22 + "," + l23);
+			if (zeroToOne(l11, l12, l13) || zeroToOne(l21, l22, l23))
 				iterator.remove();
 		}
+		System.out.println("After: " + points.size());
 		return points;
 	}
 	

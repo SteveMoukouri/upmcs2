@@ -20,18 +20,15 @@ public class Point {
 	}
 	
 	public double distanceSq(Point p) {
-		return ((this.getX() - p.getX())*(this.getX() - p.getX())-
-				(this.getY() - p.getY())*(this.getY() - p.getY()));
+		double pxmtx = (p.getX()-this.getX());
+		double pymty = (p.getY()-this.getY());
+		return (pxmtx*pxmtx) + (pymty*pymty);
 	}
 	
 	public double distance(Point p) {
 		return Math.sqrt(this.distanceSq(p));
 	}
-	
-	public Point vector(Point p) {
-		return new Point(p.getX()-this.getX(), p.getY()-this.getY());
-	}
-	
+
 	public int getX() { return x; }
 	public int getY() { return y; }
 	

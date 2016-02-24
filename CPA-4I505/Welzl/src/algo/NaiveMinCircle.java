@@ -15,7 +15,7 @@ public class NaiveMinCircle implements MinCircleSolver {
 		double diam = Double.POSITIVE_INFINITY;
 		Circle c = null;
 		if (points.size() <= 2) 
-			return new Circle(new Point(-1, -1), -1);
+			return new Circle(-1, -1, -1);
 		
 		for (Point p : points) {
 			for (Point q: points) {
@@ -38,15 +38,13 @@ public class NaiveMinCircle implements MinCircleSolver {
 				if (q == p) continue;
 				for (Point r : points) {
 					if (r == q || r == p) continue;
-					try {
 						Circle ctmp = Circle.circumCircle(p, q, r);
-						if (ctmp.containsAll(points)) {
-							if (diam > ctmp.getRadius()) {
+						if (diam > ctmp.getRadius()) {
+							if (ctmp.containsAll(points)) {
 								c = ctmp;
 								diam = ctmp.getRadius();
 							}
 						}
-					} catch (Exception e) { break; }
 				}
 			}
 		}

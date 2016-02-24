@@ -13,7 +13,7 @@ public class WelzlMinCircle implements MinCircleSolver {
 	
 	/*
 	b_minidisk(P, R):
-		if P == null [or |R| == 3]:
+		if P == null [or |R| == 3]:
 			D = b_md(null, R)
 		else:
 			choose random p in P
@@ -50,7 +50,6 @@ public class WelzlMinCircle implements MinCircleSolver {
 	}
 	
 	private Point randomPoint(ArrayList<Point> points) {
-		int rnd = this.generator.nextInt(points.size());
-		return points.get(rnd);
+		return points.get(generator.nextInt(points.size()));
 	}
 }
