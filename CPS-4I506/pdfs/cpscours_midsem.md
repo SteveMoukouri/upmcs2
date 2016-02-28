@@ -44,7 +44,7 @@ Un composant explicite ses dépendances:
 1. Ce dont il a besoin pour fonctionner
 2. Ce qu'il fournit à ses clients
 
-cf. Feuille
+![Require/Provide DP](assets/reqprovide.png)
 
 ### Exemple de composition
 
@@ -58,11 +58,11 @@ c.work();                          // Utilisation
 
 ### Diagramme de composant
 
-cf. Feuille
+![Component diagram](assets/component.png)
 
 ### Diagramme de composition
 
-cf. Feuille
+![Composition diagram](assets/composition.png)
 
 # Cours 2
 

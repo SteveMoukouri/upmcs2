@@ -1,8 +1,10 @@
 % CPS - Notes de TD
 % Jordi Bertran de Balanda
 
-# TD 1
+# TD1 - Dataflow Require/Provide
+
 ## Ex1. Communication évènementielle
+
 ### Q1. Interfaces de service
 
 Service considéré: pouvoir recevoir un évènement.
@@ -115,7 +117,7 @@ public class GenInt implements Component, requireIntEventReceiver {
 
 Diagramme de composants: cf. feuille.
 
-# TD 2
+# TD2 - Spécifications
 
 ## Spécifications bancaires
 
