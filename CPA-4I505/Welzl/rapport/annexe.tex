@@ -1,0 +1,172 @@
+\subsection{Algorithme naïf}\label{algorithme-nauxeff}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{public} \KeywordTok{class} \NormalTok{NaiveMinCircle }\KeywordTok{implements} \NormalTok{MinCircleSolver \{}
+    \FunctionTok{@Override}
+    \KeywordTok{public} \NormalTok{Circle }\FunctionTok{getMinCircle}\NormalTok{(ArrayList<Point> points) \{}
+        \CommentTok{// Précalcul éventuel}
+        \CommentTok{// points = Tools.aklPreCalc(points);}
+        
+        \DataTypeTok{double} \NormalTok{diam = Double.}\FunctionTok{POSITIVE_INFINITY}\NormalTok{;}
+        \NormalTok{Circle c = }\KeywordTok{null}\NormalTok{;}
+        \KeywordTok{if} \NormalTok{(points.}\FunctionTok{size}\NormalTok{() <= }\DecValTok{2}\NormalTok{) }
+            \KeywordTok{return} \KeywordTok{new} \FunctionTok{Circle}\NormalTok{(}\KeywordTok{new} \NormalTok{Point(-}\DecValTok{1}\NormalTok{, -}\DecValTok{1}\NormalTok{), -}\DecValTok{1}\NormalTok{);}
+        \CommentTok{// Cercle défini par 2 points}
+        \KeywordTok{for} \NormalTok{(Point p : points) \{}
+            \KeywordTok{for} \NormalTok{(Point q: points) \{}
+                \KeywordTok{if} \NormalTok{(p == q) }\KeywordTok{continue}\NormalTok{;}
+                \NormalTok{Circle ctmp = }\KeywordTok{new} \FunctionTok{Circle}\NormalTok{(p, q);}
+                \KeywordTok{if} \NormalTok{(ctmp.}\FunctionTok{containsAll}\NormalTok{(points)) \{}
+                    \KeywordTok{if} \NormalTok{(diam > ctmp.}\FunctionTok{getRadius}\NormalTok{()) \{}
+                        \NormalTok{c = ctmp;}
+                        \NormalTok{diam = ctmp.}\FunctionTok{getRadius}\NormalTok{(); }
+                    \NormalTok{\}}
+                \NormalTok{\}}
+            \NormalTok{\}}
+        \NormalTok{\}}
+        \KeywordTok{if} \NormalTok{(c != }\KeywordTok{null}\NormalTok{)}
+            \KeywordTok{return} \NormalTok{c;}
+        \CommentTok{// Cercle défini par 3 points}
+        \KeywordTok{for} \NormalTok{(Point p : points) \{}
+            \KeywordTok{for} \NormalTok{(Point q : points) \{}
+                \KeywordTok{if} \NormalTok{(q == p) }\KeywordTok{continue}\NormalTok{;}
+                \KeywordTok{for} \NormalTok{(Point r : points) \{}
+                    \KeywordTok{if} \NormalTok{(r == q || r == p) }\KeywordTok{continue}\NormalTok{;}
+                    \NormalTok{Circle ctmp = Circle.}\FunctionTok{circumCircle}\NormalTok{(p, q, r);}
+                    \KeywordTok{if} \NormalTok{(diam > ctmp.}\FunctionTok{getRadius}\NormalTok{()) \{}
+                        \KeywordTok{if} \NormalTok{(ctmp.}\FunctionTok{containsAll}\NormalTok{(points)) \{}
+                            \NormalTok{c = ctmp;}
+                            \NormalTok{diam = ctmp.}\FunctionTok{getRadius}\NormalTok{();}
+                        \NormalTok{\}}
+                    \NormalTok{\}}
+                \NormalTok{\}}
+            \NormalTok{\}}
+        \NormalTok{\}}
+        \KeywordTok{return} \NormalTok{c==}\KeywordTok{null}\NormalTok{?}\KeywordTok{new} \FunctionTok{Circle}\NormalTok{(-}\DecValTok{1}\NormalTok{, -}\DecValTok{1}\NormalTok{, -}\DecValTok{1}\NormalTok{):c;}
+    \NormalTok{\}}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Algorithme de Welzl}\label{algorithme-de-welzl}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Classes annexes}\label{classes-annexes}
+
+\subsubsection{Cercle}\label{cercle}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{public} \KeywordTok{class} \NormalTok{Circle \{}
+    \KeywordTok{private} \NormalTok{Point center;}
+    \KeywordTok{private} \DataTypeTok{double} \NormalTok{radius;}
+    
+    \KeywordTok{public} \FunctionTok{Circle}\NormalTok{() \{ }\KeywordTok{this}\NormalTok{.}\FunctionTok{center} \NormalTok{= }\KeywordTok{null}\NormalTok{; }\KeywordTok{this}\NormalTok{.}\FunctionTok{radius} \NormalTok{= -}\DecValTok{1}\NormalTok{; \}}
+    
+    \KeywordTok{public} \FunctionTok{Circle}\NormalTok{(Point center, }\DataTypeTok{double} \NormalTok{radius) \{}
+        \KeywordTok{this}\NormalTok{.}\FunctionTok{center} \NormalTok{= center;}
+        \KeywordTok{this}\NormalTok{.}\FunctionTok{radius} \NormalTok{= radius;}
+    \NormalTok{\}}
+    
+    \KeywordTok{public} \FunctionTok{Circle}\NormalTok{(}\DataTypeTok{int} \NormalTok{x, }\DataTypeTok{int} \NormalTok{y, }\DataTypeTok{double} \NormalTok{radius) \{}
+        \KeywordTok{this}\NormalTok{.}\FunctionTok{center} \NormalTok{= }\KeywordTok{new} \NormalTok{Point(x, y);}
+        \KeywordTok{this}\NormalTok{.}\FunctionTok{radius} \NormalTok{= radius;}
+    \NormalTok{\}}
+    
+    \KeywordTok{public} \FunctionTok{Circle}\NormalTok{(Point a, Point b) \{}
+        \KeywordTok{this}\NormalTok{.}\FunctionTok{center} \NormalTok{= }\KeywordTok{new} \NormalTok{Point((a.}\FunctionTok{getX}\NormalTok{()+b.}\FunctionTok{getX}\NormalTok{())/}\DecValTok{2}\NormalTok{, (a.}\FunctionTok{getY}\NormalTok{()+b.}\FunctionTok{getY}\NormalTok{())/}\DecValTok{2}\NormalTok{);}
+        \KeywordTok{this}\NormalTok{.}\FunctionTok{radius} \NormalTok{= a.}\FunctionTok{distance}\NormalTok{(b) / }\DecValTok{2}\NormalTok{;}
+    \NormalTok{\}}
+    
+    \KeywordTok{private} \DataTypeTok{static} \DataTypeTok{boolean} \FunctionTok{sameLine}\NormalTok{(Point a, Point b, Point c) \{}
+        \KeywordTok{return} \NormalTok{(a.}\FunctionTok{getX}\NormalTok{()*(b.}\FunctionTok{getY}\NormalTok{()-c.}\FunctionTok{getY}\NormalTok{())}
+                \NormalTok{+b.}\FunctionTok{getX}\NormalTok{()*(c.}\FunctionTok{getY}\NormalTok{()-a.}\FunctionTok{getY}\NormalTok{())}
+                \NormalTok{+c.}\FunctionTok{getX}\NormalTok{()*(a.}\FunctionTok{getY}\NormalTok{()-b.}\FunctionTok{getY}\NormalTok{()) == }\DecValTok{0}\NormalTok{);}
+    \NormalTok{\}}
+    
+    \KeywordTok{public} \DataTypeTok{static} \NormalTok{Circle }\FunctionTok{circumCircle}\NormalTok{(Point a, Point b, Point c) \{}
+        \KeywordTok{if} \NormalTok{(}\FunctionTok{sameLine}\NormalTok{(a, b, c))}
+            \KeywordTok{return} \KeywordTok{new} \FunctionTok{Circle}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{);}
+        \DataTypeTok{double} \NormalTok{ux = (a.}\FunctionTok{getX}\NormalTok{()*a.}\FunctionTok{getX}\NormalTok{()+a.}\FunctionTok{getY}\NormalTok{()*a.}\FunctionTok{getY}\NormalTok{())*(b.}\FunctionTok{getY}\NormalTok{()-c.}\FunctionTok{getY}\NormalTok{())+}
+                \NormalTok{(b.}\FunctionTok{getX}\NormalTok{()*b.}\FunctionTok{getX}\NormalTok{()+b.}\FunctionTok{getY}\NormalTok{()*b.}\FunctionTok{getY}\NormalTok{())*(c.}\FunctionTok{getY}\NormalTok{()-a.}\FunctionTok{getY}\NormalTok{())+}
+                \NormalTok{(c.}\FunctionTok{getX}\NormalTok{()*c.}\FunctionTok{getX}\NormalTok{()+c.}\FunctionTok{getY}\NormalTok{()*b.}\FunctionTok{getY}\NormalTok{())*(a.}\FunctionTok{getY}\NormalTok{()-b.}\FunctionTok{getY}\NormalTok{());}
+        \DataTypeTok{double} \NormalTok{uy = (a.}\FunctionTok{getX}\NormalTok{()*a.}\FunctionTok{getX}\NormalTok{()+a.}\FunctionTok{getY}\NormalTok{()*a.}\FunctionTok{getY}\NormalTok{())*(c.}\FunctionTok{getX}\NormalTok{()-b.}\FunctionTok{getX}\NormalTok{())+}
+                \NormalTok{(b.}\FunctionTok{getX}\NormalTok{()*b.}\FunctionTok{getX}\NormalTok{()+b.}\FunctionTok{getY}\NormalTok{()*b.}\FunctionTok{getY}\NormalTok{())*(a.}\FunctionTok{getX}\NormalTok{()-c.}\FunctionTok{getX}\NormalTok{())+}
+                \NormalTok{(c.}\FunctionTok{getX}\NormalTok{()*c.}\FunctionTok{getX}\NormalTok{()+c.}\FunctionTok{getY}\NormalTok{()*b.}\FunctionTok{getY}\NormalTok{())*(b.}\FunctionTok{getX}\NormalTok{()-a.}\FunctionTok{getX}\NormalTok{());}
+        \DataTypeTok{double} \NormalTok{d = }\DecValTok{2}\NormalTok{*(a.}\FunctionTok{getX}\NormalTok{()*(b.}\FunctionTok{getY}\NormalTok{()-c.}\FunctionTok{getY}\NormalTok{())+}
+                \NormalTok{b.}\FunctionTok{getX}\NormalTok{()*(c.}\FunctionTok{getY}\NormalTok{()-a.}\FunctionTok{getY}\NormalTok{())+}
+                \NormalTok{c.}\FunctionTok{getX}\NormalTok{()*(a.}\FunctionTok{getY}\NormalTok{()-b.}\FunctionTok{getY}\NormalTok{()));}
+        \NormalTok{Point p = }\KeywordTok{new} \NormalTok{Point((}\DataTypeTok{int}\NormalTok{)(ux/d), (}\DataTypeTok{int}\NormalTok{)(uy/d));}
+        \KeywordTok{return} \KeywordTok{new} \FunctionTok{Circle}\NormalTok{(p, p.}\FunctionTok{distance}\NormalTok{(b));}
+    \NormalTok{\}}
+    
+    \KeywordTok{public} \DataTypeTok{static} \NormalTok{Circle }\FunctionTok{computeBounds}\NormalTok{(ArrayList<Point> points) \{}
+        \KeywordTok{if} \NormalTok{(points.}\FunctionTok{size}\NormalTok{() == }\DecValTok{3}\NormalTok{) \{}
+            \KeywordTok{return} \FunctionTok{circumCircle}\NormalTok{(points.}\FunctionTok{get}\NormalTok{(}\DecValTok{0}\NormalTok{), points.}\FunctionTok{get}\NormalTok{(}\DecValTok{1}\NormalTok{), points.}\FunctionTok{get}\NormalTok{(}\DecValTok{2}\NormalTok{));}
+        \NormalTok{\}}
+        \KeywordTok{else} \KeywordTok{if} \NormalTok{(points.}\FunctionTok{size}\NormalTok{() == }\DecValTok{2}\NormalTok{)\{}
+            \KeywordTok{return} \KeywordTok{new} \FunctionTok{Circle}\NormalTok{(points.}\FunctionTok{get}\NormalTok{(}\DecValTok{0}\NormalTok{), points.}\FunctionTok{get}\NormalTok{(}\DecValTok{1}\NormalTok{));}
+        \NormalTok{\} }\KeywordTok{else} \NormalTok{\{}
+            \KeywordTok{return} \KeywordTok{new} \FunctionTok{Circle}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{);}
+        \NormalTok{\}}
+    \NormalTok{\}}
+    
+    \KeywordTok{public} \DataTypeTok{boolean} \FunctionTok{contains}\NormalTok{(Point p) \{}
+        \KeywordTok{return} \NormalTok{center.}\FunctionTok{distanceSq}\NormalTok{(p) <= (radius*radius);}
+    \NormalTok{\}}
+    
+    \KeywordTok{public} \DataTypeTok{boolean} \FunctionTok{containsAll}\NormalTok{(ArrayList<Point> points) \{}
+        \KeywordTok{for} \NormalTok{(Point p : points)}
+            \KeywordTok{if} \NormalTok{(!}\FunctionTok{contains}\NormalTok{(p))}
+                \KeywordTok{return} \KeywordTok{false}\NormalTok{;}
+        \KeywordTok{return} \KeywordTok{true}\NormalTok{;}
+    \NormalTok{\}}
+    
+    \KeywordTok{public} \NormalTok{Point }\FunctionTok{getCenter}\NormalTok{() \{ }\KeywordTok{return} \NormalTok{center; \}}
+    \KeywordTok{public} \DataTypeTok{double} \FunctionTok{getRadius}\NormalTok{() \{ }\KeywordTok{return} \NormalTok{radius; \}}
+    
+    \KeywordTok{public} \NormalTok{String }\FunctionTok{toString}\NormalTok{() \{}
+        \KeywordTok{return} \KeywordTok{this}\NormalTok{.}\FunctionTok{getCenter}\NormalTok{().}\FunctionTok{toString}\NormalTok{() + }\StringTok{" "} \NormalTok{+ }\KeywordTok{this}\NormalTok{.}\FunctionTok{getRadius}\NormalTok{();}
+    \NormalTok{\}}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\subsubsection{Point}\label{point}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{public} \KeywordTok{class} \NormalTok{Point \{}
+    \KeywordTok{private} \DataTypeTok{int} \NormalTok{x;}
+    \KeywordTok{private} \DataTypeTok{int} \NormalTok{y;}
+    
+    \KeywordTok{public} \NormalTok{Point(}\DataTypeTok{int} \NormalTok{x, }\DataTypeTok{int} \NormalTok{y) \{}
+        \KeywordTok{this}\NormalTok{.}\FunctionTok{x} \NormalTok{= x;}
+        \KeywordTok{this}\NormalTok{.}\FunctionTok{y} \NormalTok{= y;}
+    \NormalTok{\}}
+
+    \KeywordTok{public} \DataTypeTok{double} \FunctionTok{distanceSq}\NormalTok{(Point p) \{}
+        \KeywordTok{return} \NormalTok{((}\KeywordTok{this}\NormalTok{.}\FunctionTok{getX}\NormalTok{() - p.}\FunctionTok{getX}\NormalTok{())*(}\KeywordTok{this}\NormalTok{.}\FunctionTok{getX}\NormalTok{() - p.}\FunctionTok{getX}\NormalTok{())+}
+                \NormalTok{(}\KeywordTok{this}\NormalTok{.}\FunctionTok{getY}\NormalTok{() - p.}\FunctionTok{getY}\NormalTok{())*(}\KeywordTok{this}\NormalTok{.}\FunctionTok{getY}\NormalTok{() - p.}\FunctionTok{getY}\NormalTok{()));}
+    \NormalTok{\}}
+    
+    \KeywordTok{public} \DataTypeTok{double} \FunctionTok{distance}\NormalTok{(Point p) \{}
+        \KeywordTok{return} \NormalTok{Math.}\FunctionTok{sqrt}\NormalTok{(}\KeywordTok{this}\NormalTok{.}\FunctionTok{distanceSq}\NormalTok{(p));}
+    \NormalTok{\}}
+
+    \KeywordTok{public} \DataTypeTok{int} \FunctionTok{getX}\NormalTok{() \{ }\KeywordTok{return} \NormalTok{x; \}}
+    \KeywordTok{public} \DataTypeTok{int} \FunctionTok{getY}\NormalTok{() \{ }\KeywordTok{return} \NormalTok{y; \}}
+    
+    \KeywordTok{public} \NormalTok{String }\FunctionTok{toString}\NormalTok{() \{}
+        \KeywordTok{return} \KeywordTok{this}\NormalTok{.}\FunctionTok{getX}\NormalTok{() + }\StringTok{" "} \NormalTok{+ }\KeywordTok{this}\NormalTok{.}\FunctionTok{getY}\NormalTok{();}
+    \NormalTok{\}}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+

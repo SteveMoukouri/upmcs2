@@ -1,0 +1,78 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\title{4I505 CPA\\Welzl's Algorithm}
+\author{Jordi Bertran de Balanda}
+
+\begin{document}
+\maketitle
+\begin{abstract}
+  This report presents Welzl's algorithm for obtaining the circle with the smallest radius covering all points in a set. We discuss the merits of this algorithm and compare it to the naive approach to solving the smallest bounding circle problem. We finish by examining the performance of our Java implementation of the algorithm against the naive approach, executing both algorithms on a number of instances of the problem with 256 points in the problem set.
+\end{abstract}
+\section{Introduction}
+\subsection{Naive approach}
+The idea behind the naive algorithm to solve the SBC problem is that in instance of the problem with more than 3 points, the correct circle can only be bound by at most 3 points in the problem set. More specifically, the problem set will have either 2 or 3 points on the border of the circle. Therefore, the naive approach first examines whether it is possible to have a circle with only two points on its border that encompasses the whole set. If we find such a circle, it is the optimal circle. If not, we examine every point triplet in the set, and return the triplet which gives the bounding circle with the smallest radius.
+
+\begin{algorithm}
+  \caption{Naive Minimum Bounding Circle}
+  \begin{algorithmic}[1]
+    \Function{NaiveMinCircle}{Points}
+    \State $circle = null$
+    \For{p in Points}
+    \For{q in Points}
+    \State $circletmp = Circle(p, q)$
+    \If{$circletmp.rad < circle.rad and circletmp.covers(Points)$}
+    \State $circle = circletmp$
+    \EndIf
+    \EndFor
+    \EndFor
+    \If{$circle \neq null$}
+    \Return $circle$
+    \EndIf
+    \For{p in Points}
+    \For{q in Points}
+    \For{r in Points}
+    \State $circletmp = Circle(p, q, r)$
+    \If{$circletmp.rad < circle.rad$ and $circletmp.covers(Points)$}
+    \State $circle = circletmp$
+    \EndIf
+    \EndFor
+    \EndFor
+    \EndFor
+    \State \Return $circle$
+    \EndFunction
+  \end{algorithmic}
+\end{algorithm}
+\subsection{Welzl's Algorithm}
+The intuition behind Welzl's algorithm is that we can begin with a set containing no points, and, as we add points to the problem set, we can update the smallest bounding circle for the next iteration according to the position of the point in relation to the circle defined in the current iteration. This is expressed by Welzl in a recursive manner that lends itself well to the proof that he provides in his article, but it would be possible to express it in an iterative fashion.
+\begin{algorithm}
+  \caption{Naive Minimum Bounding Circle}
+  \begin{algorithmic}[1]
+    \Function{WelzlRec}{$P, R$}
+    \If {$P = \emptyset$ or $|R| = 3 $}
+    \State $D = $boundedCircle($\emptyset$, $R$)
+    \Else
+    \State choose random $p \in Points$
+    \State $D = $WelzlMinCircle($P - {p}$, $R$)
+    \If $p \notin D$
+    \State $D = $WelzlMinCircle($P - {p}$, $R \cup p$)
+    \EndIf
+    \EndIf
+    \State \Return D
+    \EndFunction
+    \Function {WelzlMinCircle}{P}
+    \State \Return WelzlRec($P$, $\emptyset$)
+    \EndFunction
+  \end{algorithmic}
+\end{algorithm}
+\section{Results}
+\subsection{Testing method}
+We have at our disposal a simple implementation of both the naive algorithm and Welzl's algorithm. To gauge both approaches' performances, we successively run the naive implementation and the Welzl implementation on a series of 1664 instances of 256 point bounding minimum circle problems from the provided Varoumas test base, and we use the JVM's system calls to obtain run time for each algorithm.
+\subsection{Performance}
+\section{Analysis}
+\subsection{Expectations}
+\section{Conclusion}
+%\appendix
+%\input{annexe.tex}
+\end{document}
