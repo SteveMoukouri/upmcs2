@@ -7,11 +7,11 @@
 
 1. Rappels (design patterns etc)
 2. Spécification (métier)
-   * Langage de spécification: types de données algébriques (ADT), langage semi-formel (ensembles, relations, logique)
+	* Langage de spécification: types de données algébriques (ADT), langage semi-formel (ensembles, relations, logique)
 3. Conception par contrat
 4. Contrat et héritage
 5. Tests basés sur les modèles (MBT)
-   * Préparer les tests à partir de la spécification pour des critères de couverture
+	* Préparer les tests à partir de la spécification pour des critères de couverture
 6. Logique de Hoare 1
 7. Logique de Hoare 2
 8. Modélisation de la concurrence 1
@@ -100,9 +100,11 @@ Dans CPS: un langage "semi-formel" basé sur les types algébriques (~ méthode 
 	* Invariants de minimisation: pour éviter les redondances.
 	* Post-conditions: propriétés des constructeurs/opérateurs ~ sémantique du service.
 	
-### Exemple: les cuves
+### Spécification d'un service de cuves
 
-* **Service:** Cuve
+#### Écriture d'un service
+
+* **Service:** Nom du service
 * **Observators:** fonctions d'observation de l'état
 	* Signatures (types)
 	* Préconditions (contraintes sur le domaine)
@@ -112,6 +114,95 @@ Dans CPS: un langage "semi-formel" basé sur les types algébriques (~ méthode 
 	* Invariants: propriétés valides dans **tous** les états.
 	* Invariants de minimisation: pour éviter les redondances.
 	* Post-conditions: propriétés des constructeurs/opérateurs ~ sémantique du service.
+
+#### Exemple d'écriture
+* **Service:** Cuve
+* **Observators:** 
+	* quantity: [Cuve] $\rightarrow$ double
+	* empty : [Cuve] $\rightarrow$ boolean
+* **Constructors:**
+	* init : $\rightarrow$ [Cuve]
+* **Operators:** 
+	* fill : [Cuve] $\times$ double $\rightarrow$ [Cuve]
+		* pre : fill(C, q) require q $\geq$ 0
+	* pump : [Cuve] $\times$ double $\rightarrow$ [Cuve]
+		* pre : pump(C, q) require q $\geq$ 0
+* **Observations:**
+	* [invariants]
+		* empty(C) = quantity(C) = 0
+		* getQuantity(C) $\geq$ 0
+	* [init]
+		* getQuantity(Init()) = 0
+	* [fill]
+		* ...
+
+#### Catégories
+
+##### Observateurs
+
+* But: observer l'état/retourner une valeur concrète (déjà bien spécifiée) depuis l'état courant
+* Signature: 
+	* nomObs: [Service] $\times T_1 \times .. \times T_n \rightarrow T$
+		* pre: nomObs(S, $x_1$, .., $x_n$) require prop(S, $x_1$, .., $x_n$)
+
+##### Constructeurs
+
+* But: 
+* Signature: 
+	* 
+	
+* But: décrire un état initial
+* Signature: init: $T_1 \times .. \times T_n \rightarrow$ [Service]
+	* pre: init($x_1$, .., $x_n$) require prop(S, $x_1$, .., $x_n$)
+
+##### Opérateurs
+
+* But: décrire une transition
+* Signature: op: [Service] $\times T_1 \times .. \times T_n \rightarrow$ [Service]
+	* pre: op(S, $x_1$, .., $x_n$) require prop(S, $x_1$, .., $x_n$)
+
+##### Observations
+
+* [invariants]
+	* Invariants de minimisation: essayer d'exprimer chaque observateur en fonction des autres observateurs
+	* Invariants "utiles": propriétés du service
+* Observations des constructeurs et opérateurs
+	* Une section [op] pour chacun si applicable
+	* Donner les valeurs des observateurs non minimisés applicables
+
+#### Notions
+
+* __Cohérence__: les observations respectent les invariants
+* __Complétude__: dans chaque état, les observateurs ont une valeur précise
+
+### Exemple complet: Tuyau
+
+* **Service:** Tuyau
+* **Observators:** 
+	* quantity: [Tuyau] $\rightarrow$ double
+	* **const** capacity: [Tuyau] $\rightarrow$ double
+	* cuveIn: [Tuyau] $\rightarrow$ Cuve
+	* cuveOut: [Tuyau] $\rightarrow$ Cuve
+	* openIn: [Tuyau] $\rightarrow$ boolean
+	* openOut: [Tuyau] $\rightarrow$ boolean
+* **Constructors:** 
+	* init: Cuve $\times$ Cuve $\rightarrow$ [Tuyau]
+* **Operators:** 
+	* switchIn: [Tuyau] $\rightarrow$ [Tuyau]
+		* pre: switchIn(T) require $\neg$openOut(T)
+	* switchOut: [Tuyau] $\rightarrow$ [Tuyau]
+		* pre: switchOut(T) require $\neg$openIn(T)
+	* flush: [Tuyau] $\rightarrow$ [Tuyau]
+		* pre: flush(T) require $\neg$openIn(T) $\wedge$ $\neg$openOut(T)
+* **Observations:** (pas de minimisation dans l'exemple)
+	* [invariants]
+		* 0 $\leq$ quantity(T) $\leq$ capacity(T)
+		* $\neg$ openIn(T) $\wedge$ openOut(T)
+	* [switchIn]
+		* quantity(switchIn(T)) = quantity(T) + deversable(T)
+		* cuveIn(switchIn(T)) = Cuve::pump(CuveIn(T), deversable(T))
+		* cuveOut(switchIn(T)) = cuveOut(T)
+	* ...
 
 # Cours 3
 
@@ -187,14 +278,14 @@ Un contrat peut être:
 
 ### Spécification
 
-**SPEC** | **CONTRAT**
-     ---------|------------
-Service       | Interface (du même nom)
-Observateurs  | Accesseurs + préconditions
-Constructeurs | Méthodes d'initialisation
-Opérateurs    | Méthodes + préconditions
-Observations  | Invariants du contrat
-              | Postconditions des méthodes
+|SPEC | CONTRAT|
+|--------------|---------------------------|
+|Service       | Interface (du même nom)|
+|Observateurs  | Accesseurs + préconditions|
+|Constructeurs | Méthodes d'initialisation|
+|Opérateurs    | Méthodes + préconditions|
+|Observations  | Invariants du contrat|
+|              | Postconditions des méthodes|
 
 ####Exemple
 
@@ -590,16 +681,16 @@ public void testPumpTrans () {
 ### Critères de couverture
 
 * Couverture des transitions
-    * Un objectif de test par transition (transition: constructeur - init - ou opérateur - fill, pump)
-        * Variante: un objectif par séquence de 2 transitions (constructeurs exclus): pump;pump, fill;fill, pump;fill, fill;pump
+	* Un objectif de test par transition (transition: constructeur - init - ou opérateur - fill, pump)
+		* Variante: un objectif par séquence de 2 transitions (constructeurs exclus): pump;pump, fill;fill, pump;fill, fill;pump
     * Opération unique
     * Oracle: test des postconditions et invariants (observations)
 * Couverture des préconditions
     * Pour chaque précondition d'une spécification,
     * un objectif de test $\rightarrow$ la précondition "passe"
-        * Oracle: test des postconditions et invariants (observations)
+		* Oracle: test des postconditions et invariants (observations)
     * un objectif de test $\rightarrow$ la précondition ne passe pas
-        * Oracle: attente d'une exception/d'un code d'erreur etc..
+		* Oracle: attente d'une exception/d'un code d'erreur etc..
 * Couverture des états "intéressants"
     * Un objectif par état "intéressant" (point de vue "métier")
         * Oracle: description de l'état qu'on veut atteindre
@@ -630,7 +721,7 @@ Caractérisation logique des programmes (séquentiels/impératifs)
 
 Triplet de Hoare:
 ```
-.   { P }         prog         { Q }
+    { P }         prog         { Q }
 préconditions              postconditions
 ```
 Logique "classique" + variables et expressions de programmes.
@@ -654,29 +745,23 @@ En supposant P vraie **avant** l'exécution du programme, alors Q est vraie
 
 ## Axiome d'affectation
 
-```
-____________________________(aff)
-{ Q[expr/V] } V = expr { Q }
-```
+$$\frac{}{\{Q[\textrm{expr}/V]\}V=\textrm{expr}\{Q\}}\textrm{(aff)}$$
+
 Q[expr/V]: Q dans laquelle expr écrase les occurences de V.
 
 ### Exemple
 
-Trouver P la plus faible précondition telle que { P } x = y + 1 { x = 3 } est vrai.
+Trouver P la plus faible précondition telle que { P } x = y + 1 { x = 3 } est vrai.
 
-1.  { x = 3 } x = y + 1 { x = 3 }
-2.  { y + 1 = 3 } x = y + 1 { x = 3 }
-3.  { y = 3 } x = y + 1 { x = 3 }
+1.  { x = 3 } x = y + 1 { x = 3 }
+2.  { y + 1 = 3 } x = y + 1 { x = 3 }
+3.  { y = 3 } x = y + 1 { x = 3 }
 
 Donc P (def)=  { y = 2 }
 
 ## Règle du séquencement
 
-```
-{ P } C1 { P1 } { P1 } C2 { P2 } .. { Pn } Cn { Q }
-___________________________________________________(seq)
-           { P } C1; C2; .. ; Cn { Q }
-```
+$$\frac{\{P\}C_1\{P_1\}C2\{P_2\} .. \{P_n\}C_n\{Q\}}{\{P\}C_1; C_2; .. C_n \{Q\}}\textrm{(seq)}$$
 
 ### Exemple
 
@@ -689,22 +774,13 @@ Trouver P la plus faible précondition telle que { P } z = x; z = z + y; u = z; 
 
 ### Arbre de preuve
 
-```
-_______________(aff)   _______________(aff)  ________________(aff)
-{true} z=x {P1}        {P1} z=z+y {P2}       {P2} u=z {u=x+y}
-_____________________________________________________________(seq)
-                    { P } ___; ___; ___ { Q }
-```
+$$\frac{\frac{}{\{true\}z=x\{P_1\}}\textrm{(aff)}\frac{}{\{P_1\}z=z+y\{P_2\}}\textrm{(aff)}\frac{}{\{P_2\}u=z\{u=x+y\}}\textrm{(aff)}}{\{P\} \textrm{--; --; --} \{Q\}}\textrm{(seq)}$$
 
 ## Règle du Modus Ponens
 
 Utilisé seulement pour les préconditions dans le cas de CPS.
 
-```
-P => P'  {P'} C {Q}
-____________________(mp-pre)
-     {P} C {Q}
-```
+$$\frac{P \Rightarrow P' \hspace{.2cm} \{P'\} C \{Q\}}{\{P\}C\{Q\}}\textrm{(mp-pre)}$$
 
 ### Exemple
 
@@ -718,11 +794,7 @@ Preuve:
 
 ## Règle de l'alternative
 
-```
-{P1} C1 {Q}                    {P2} C2 {Q}
-__________________________________________(alt)
-{(B => P1)^(!B=>P2)} if (B) C1 else C2 {Q}
-```
+$$\frac{\{P_1\}C_1\{Q\}\hspace{.2cm}\{P_2\}C_2\{Q\}}{\{(B \Rightarrow P1) \wedge (\neg B\Rightarrow P2)\} \textrm{if (B)} C_1 \textrm{else }C_2 \{Q\}}\textrm{(alt)}$$
 
 ### Exemple
 
@@ -730,8 +802,8 @@ Trouver P la plus faible précondition telle que {P} if (x < y) x = y else x = 2
 
 1. {y = 2 ($\Leftrightarrow$ P1)} x = y {x = 2} (aff)
 2. {2 = 2 ($\Leftrightarrow$ P2 $\Leftrightarrow$ true)} x = 2 {x = 2} (aff)
-3. {[(x < y) $\Rightarrow$ y = 2]^[(x $\geq$ y) $\Rightarrow$ true] (<+> P)} if (x < y) x = y else x = 2 {x = 2}
-4. P $\Leftrightarrow$ [(x < y) $\Rightarrow$ y = 2]^true $\Leftrightarrow$ (x < y) $\Rightarrow$ y = 2 $\Leftrightarrow$ (x $\geq$ y)v y=2
+3. {[(x < y) $\Rightarrow$ y = 2] $\wedge$ [(x $\geq$ y) $\Rightarrow$ true] (<+> P)} if (x < y) x = y else x = 2 {x = 2}
+4. P $\Leftrightarrow$ [(x < y) $\Rightarrow$ y = 2] $\wedge$ true $\Leftrightarrow$ (x < y) $\Rightarrow$ y = 2 $\Leftrightarrow$ (x $\geq$ y)v y=2
 
 ## Exemples
 
