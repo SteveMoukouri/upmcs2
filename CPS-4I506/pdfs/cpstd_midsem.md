@@ -31,12 +31,13 @@ public interface requireActivator {
 
 ### Q3. Composant émetteur
 
-cf. feuille
+![Diagramme de GenConst - Q3](assets/td1/ex1q3.png)
+
 Pas de IntEventSenderService, pas réifié (cf Q2).
 
 ### Q4. Composant récepteur
 
-cf. feuille (diagramme de composant de IntEventReceiverService).
+![Diagramme de Printer - Q4](assets/td1/ex1q4.png)
 
 ```java
 public class Printer implements Component, IntEventReceiverService {
@@ -78,7 +79,7 @@ public class Composition {
 
 Le programme produit une suite de 10 fois le nombre 1 sur sa sortie standard.
 
-cf. feuille pour le diagramme de composants.
+![Diagramme de composition - Q5](assets/td1/ex1q5.png)
 
 ## Ex2. Dataflow
 

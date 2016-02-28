@@ -349,7 +349,7 @@ A partir du contrat de service (interface):
 * possibilité d'activer ou non les vérifications
     * => Décorer les instances du service avec le contrat
 
-Cf. feuille pour schéma decorator
+![Design Pattern Decorator](assets/decorator.png)
 
 ```java
 public class SwitchContract extends SwitchDecorator {
