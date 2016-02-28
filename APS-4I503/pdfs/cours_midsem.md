@@ -8,10 +8,12 @@
 ### Programme
 
 Description statique (fichier) d'un comportement dynamique (exécution).
+
 Statique: exécutable/bytecode/assembleur/code source
+
 Code source: suite de caractères obéissant à des règles de syntaxe.
 
-Syntaxe:
+### Syntaxe
 
 * Composée de:
 	* Lexique: ensemble d'unités lexicales (mots/symboles)
@@ -38,11 +40,11 @@ Dirigée par la syntaxe.
 * Analyse de type: éliminer les erreurs prévisibles à l'exécution.
 
 ```
-Erreur					      Erreur
-|          AST			       AST       |
+  Erreur					                  Erreur
+    |    AST			          AST           |
 [Source] --> [Analyse syntaxique] ---> [Vérificateur de types] ---> [Evaluateur]
-lex/yacc	       	      (Prolog)			 | scheme
-[résultat]
+lex/yacc	       	                         (Prolog)			         | scheme
+                                                                     [résultat]
 ```
 
 ## Noyau impératif
@@ -55,6 +57,7 @@ lex/yacc	       	      (Prolog)			 | scheme
 ####Lexique
 
 Mots clés (réservés):
+
   Key | Bool  | Int
 ------|-------|-----
 VAR   | true  | add
@@ -131,8 +134,8 @@ Dans le cadre du langage réalisé en APS:
 ```
 true  : bool
 false : bool
-n     : int  si n $\in$ num
-x     : ?    si x $\in$ ident
+n     : int  si n E num
+x     : ?    si x E ident
 (not e) : bool si e : bool
 (and e1 e2) : bool si e1 : bool et e2 : bool
 (or e1 e2) : bool si e1 : bool et e2 : bool
@@ -158,7 +161,7 @@ si e1 : t et e2 : t pour tout type t
 
 $\Gamma$ $\vdash$ (SET x e) : void si $\Gamma$ $\vdash$ x : t et $\Gamma$ $\vdash$ e : t $\forall$ type t
 
-$\Gamma$ $\vdash$ (IF e b1 b2) : void si $\Gamma$ $\vdash$ e : bool et $\Gamma$ $\vdash$ b1 : void et $\Gamma$ $\vdash$ b2 : void
+$\Gamma$ $\vdash$ (IF e $b_1$ $b_2$) : void si $\Gamma$ $\vdash$ e : bool et $\Gamma$ $\vdash$ $b_1$ : void et $\Gamma$ $\vdash$ $b_2$ : void
 
 $\Gamma$ $\vdash$ (WHILE e b) : void si $\Gamma$ $\vdash$ e : bool et b : void
 
@@ -183,7 +186,7 @@ $\Gamma$ $\vdash$ ((CONST x e)::cs) : void si $\Gamma$;x:t $\vdash$ cs : void et
 
 $\Gamma$ $\vdash$ ((VAR x t)::cs) : void si $\Gamma$;x:t $\vdash$ cs : void
 
-Notation ci-dessus: $\Gamma$;x:t abrège $\Gamma$ U {x:t}
+Notation ci-dessus: $\Gamma$;x:t abrège $\Gamma$ $\cup$ {x:t}
 
 ####Programmes/blocs
 
@@ -229,9 +232,9 @@ type ::= 'bool'
 
 ## Sémantique opérationnelle
 
-* *Expressions:* fonctionnel ~> valeurs
-* *Instructions:* impératif ~> état mémoire
-* *Déclaration:* ~> état mémoire, environnement
+* *Expressions:* fonctionnel $\leadsto$ valeurs
+* *Instructions:* impératif $\leadsto$ état mémoire
+* *Déclaration:* $\leadsto$ état mémoire, environnement
 
 ### Environnement
 
@@ -280,52 +283,52 @@ Avec m une mémoire:
 
 ### Jugement sémantique
 
-* *Expression:* r, m $\vdash$ e ~> v
-* *Instructions:* r, m $\vdash$ s ~> m'
-* *Déclarations:* r, m $\vdash$ d ~> r', m'
-* *Suite de commandes/Bloc:* r, m $\vdash$ [cs] ~> m'
+* *Expression:* r, m $\vdash$ e $\leadsto$ v
+* *Instructions:* r, m $\vdash$ s $\leadsto$ m'
+* *Déclarations:* r, m $\vdash$ d $\leadsto$ r', m'
+* *Suite de commandes/Bloc:* r, m $\vdash$ [cs] $\leadsto$ m'
 
 #### Constantes
 
-* r, m $\vdash$ true ~> #t
-* r, m $\vdash$ false ~> #f
-* r, m $\vdash$ n ~> #n (n : num)
+* r, m $\vdash$ true $\leadsto$ #t
+* r, m $\vdash$ false $\leadsto$ #f
+* r, m $\vdash$ n $\leadsto$ #n (n : num)
 
 #### Opérateurs booléens
 
-* r, m $\vdash$ (not e) ~> #f si r, m $\vdash$ e ~> #t
-* r, m $\vdash$ (not e) ~> #t si r, m $\vdash$ e ~> #f
-* r, m $\vdash$ (or e1 e2) ~> #t si r, m $\vdash$ e1 ~> #t
-* r, m $\vdash$ (or e1 e2) ~> #t si r, m $\vdash$ e1 ~> #f et r, m $\vdash$ e2 ~> #t
-* r, m $\vdash$ (or e1 e2) ~> #f si r, m $\vdash$ e1 ~> #f et r, m $\vdash$ e2 ~> #f
-* r, m $\vdash$ (and e1 e2) ~> #f si r, m $\vdash$ e1 ~> #f
-* r, m $\vdash$ (or e1 e2) ~> #f si r, m $\vdash$ e1 ~> #t et r, m $\vdash$ e2 ~> #f
-* r, m $\vdash$ (or e1 e2) ~> #t si r, m $\vdash$ e1 ~> #t et r, m $\vdash$ e2 ~> #t
+* r, m $\vdash$ (not e) $\leadsto$ #f si r, m $\vdash$ e $\leadsto$ #t
+* r, m $\vdash$ (not e) $\leadsto$ #t si r, m $\vdash$ e $\leadsto$ #f
+* r, m $\vdash$ (or $e_1$ $e_2$) $\leadsto$ #t si r, m $\vdash$ $e_1$ $\leadsto$ #t
+* r, m $\vdash$ (or $e_1$ $e_2$) $\leadsto$ #t si r, m $\vdash$ $e_1$ $\leadsto$ #f et r, m $\vdash$ $e_2$ $\leadsto$ #t
+* r, m $\vdash$ (or $e_1$ $e_2$) $\leadsto$ #f si r, m $\vdash$ $e_1$ $\leadsto$ #f et r, m $\vdash$ $e_2$ $\leadsto$ #f
+* r, m $\vdash$ (and $e_1$ $e_2$) $\leadsto$ #f si r, m $\vdash$ $e_1$ $\leadsto$ #f
+* r, m $\vdash$ (or $e_1$ $e_2$) $\leadsto$ #f si r, m $\vdash$ $e_1$ $\leadsto$ #t et r, m $\vdash$ $e_2$ $\leadsto$ #f
+* r, m $\vdash$ (or $e_1$ $e_2$) $\leadsto$ #t si r, m $\vdash$ $e_1$ $\leadsto$ #t et r, m $\vdash$ $e_2$ $\leadsto$ #t
 
 #### Opérateurs arithmétiques
 
-* r, m $\vdash$ (add e1 e2) ~> v1 + v2 si r, m $\vdash$ e1 ~> v1 et r, m $\vdash$ e2 ~> v2
-* r, m $\vdash$ (sub e1 e2) ~> v1 - v2 si r, m $\vdash$ e1 ~> v1 et r, m $\vdash$ e2 ~> v2
-* r, m $\vdash$ (mul e1 e2) ~> v1 * v2 si r, m $\vdash$ e1 ~> v1 et r, m $\vdash$ e2 ~> v2
-* r, m $\vdash$ (div e1 e2) ~> v1 / v2 si r, m $\vdash$ e1 ~> v1 et r, m $\vdash$ e2 ~> v2 et v2 != 0
+* r, m $\vdash$ (add $e_1$ $e_2$) $\leadsto$ $v_1$ + $v_2$ si r, m $\vdash$ $e_1$ $\leadsto$ $v_1$ et r, m $\vdash$ $e_2$ $\leadsto$ $v_2$
+* r, m $\vdash$ (sub $e_1$ $e_2$) $\leadsto$ $v_1$ - $v_2$ si r, m $\vdash$ $e_1$ $\leadsto$ $v_1$ et r, m $\vdash$ $e_2$ $\leadsto$ $v_2$
+* r, m $\vdash$ (mul $e_1$ $e_2$) $\leadsto$ $v_1$ * $v_2$ si r, m $\vdash$ $e_1$ $\leadsto$ $v_1$ et r, m $\vdash$ $e_2$ $\leadsto$ $v_2$
+* r, m $\vdash$ (div $e_1$ $e_2$) $\leadsto$ $v_1$ / $v_2$ si r, m $\vdash$ $e_1$ $\leadsto$ $v_1$ et r, m $\vdash$ $e_2$ $\leadsto$ $v_2$ et $v_2$ != 0
 
 #### Instructions
 
-* r, m $\vdash$ (SET x e) ~> m[a := v] si r, m $\vdash$ e ~> v et r(x) = @a
-* r, m $\vdash$ (IF b e1 e2) ~> m' si r, m $\vdash$ b ~> #t et r, m $\vdash$ e1 ~> m'
-* r, m $\vdash$ (IF b e1 e2) ~> m' si r, m $\vdash$ b ~> #f et r, m $\vdash$ e2 ~> m'
-* r, m $\vdash$ (WHILE e b) ~> m  si r, m $\vdash$ e ~> #f
-* r, m $\vdash$ (WHILE e b) ~> m''  si r, m $\vdash$ e ~> #t et r, m $\vdash$ b ~> m' et r, m' $\vdash$ (WHILE e b) ~> m''
+* r, m $\vdash$ (SET x e) $\leadsto$ m[a := v] si r, m $\vdash$ e $\leadsto$ v et r(x) = @a
+* r, m $\vdash$ (IF b $e_1$ $e_2$) $\leadsto$ m' si r, m $\vdash$ b $\leadsto$ #t et r, m $\vdash$ $e_1$ $\leadsto$ m'
+* r, m $\vdash$ (IF b $e_1$ $e_2$) $\leadsto$ m' si r, m $\vdash$ b $\leadsto$ #f et r, m $\vdash$ $e_2$ $\leadsto$ m'
+* r, m $\vdash$ (WHILE e b) $\leadsto$ m  si r, m $\vdash$ e $\leadsto$ #f
+* r, m $\vdash$ (WHILE e b) $\leadsto$ m''  si r, m $\vdash$ e $\leadsto$ #t et r, m $\vdash$ b $\leadsto$ m' et r, m' $\vdash$ (WHILE e b) $\leadsto$ m''
 
 #### Suite de commandes
 
-* Si s une instruction: r, m $\vdash$ s;cs ~> r, m' $\vdash$  s ~> m'
-* Si d $\equiv$ CONST x e: r, m $\vdash$ d; cs ~> r[x := #v], m si r, m $\vdash$ e ~> #v
-* Si d $\equiv$ VAR x: r, m $\vdash$ d; cs ~> r[x := @a], m[a = new]
+* Si s une instruction: r, m $\vdash$ s;cs $\leadsto$ r, m' $\vdash$  s $\leadsto$ m'
+* Si d $\equiv$ CONST x e: r, m $\vdash$ d; cs $\leadsto$ r[x := #v], m si r, m $\vdash$ e $\leadsto$ #v
+* Si d $\equiv$ VAR x: r, m $\vdash$ d; cs $\leadsto$ r[x := @a], m[a = new]
 
 #### Bloc
 
-* r, m $\vdash$ [cs] ~> r, (m'/r) si r, m $\vdash$ cs ~> r', m'
+* r, m $\vdash$ [cs] $\leadsto$ r, (m'/r) si r, m $\vdash$ cs $\leadsto$ r', m'
 
 ### Typage
 
@@ -342,7 +345,7 @@ Introduction du type **"pointeur vers"**: **@t** "pointeur vers t"
 
 #### Sémantique
 
-* r, m $\vdash$ (SET x e) ~> m[r(x) := v] si r, m $\vdash$ e ~> v
+* r, m $\vdash$ (SET x e) $\leadsto$ m[r(x) := v] si r, m $\vdash$ e $\leadsto$ v
 
 # Cours 4
 
@@ -350,7 +353,7 @@ Introduction du type **"pointeur vers"**: **@t** "pointeur vers t"
 
 #### Blocs
 
-Sémantique: si r, m $\vdash$ cs ~> m' alors r, m $\vdash$ [cs] ~> **m'/r**
+Sémantique: si r, m $\vdash$ cs $\leadsto$ m' alors r, m $\vdash$ [cs] $\leadsto$ **m'/r**
 
 ```
 [
@@ -431,14 +434,14 @@ Ajouter les définitions des expressions fonctionnelles, des valeurs fonctionnel
 
 Fermeture: (notation) **< e, r + [$x_1$=#]..[$x_n$:#] >**
 
-**Sémantique de la fermeture:** r, m $\vdash$ [$x_1:t_1;..;x_n:t_n$]e ~> < e, r + [$x_1$=#]..[$x_n$:#] >
+**Sémantique de la fermeture:** r, m $\vdash$ [$x_1:t_1;..;x_n:t_n$]e $\leadsto$ < e, r + [$x_1$=#]..[$x_n$:#] >
 
 #### Application - Liaison statique
 
-* **Si** r, m $\vdash$ e ~> < e', r" + [$x_1$=#]..[$x_n$=#] >
-* **et** r, m $\vdash$ $e_1$ ~> $v_1$ .. r, m $\vdash$ $e_n$ ~> $v_n$
-* **et** r'[$x_1=v_1$]..[$x_n=v_n$], m $\vdash$ e' ~> v
-* **alors** r, m $\vdash$ (e $e_1..e_n$) ~> v
+* **Si** r, m $\vdash$ e $\leadsto$ < e', r" + [$x_1$=#]..[$x_n$=#] >
+* **et** r, m $\vdash$ $e_1$ $\leadsto$ $v_1$ .. r, m $\vdash$ $e_n$ $\leadsto$ $v_n$
+* **et** r'[$x_1=v_1$]..[$x_n=v_n$], m $\vdash$ e' $\leadsto$ v
+* **alors** r, m $\vdash$ (e $e_1..e_n$) $\leadsto$ v
 
 ```
 [ CONST f [x:int] (add x 1)
@@ -476,14 +479,14 @@ Stat ::= ..
 
 Fermeture "procédurale": **< blk, r + [$x_1$=#]..[$x_n$=#] >**
 
-**Si** r [p = < blk, r + [$x_1$=#]..[$x_n$=#] >], m $\vdash$ cs ~> (r', m') **alors** r, m $\vdash$ d; cs ~> (r', m')
+**Si** r [p = < blk, r + [$x_1$=#]..[$x_n$=#] >], m $\vdash$ cs $\leadsto$ (r', m') **alors** r, m $\vdash$ d; cs $\leadsto$ (r', m')
 
 #### Application - Liaison statique
 
 * **Si** r(p) = < blk, r + [$x_1$=#]..[$x_n$=#] >
-* **et** r, m $\vdash$ $e_1$ ~> $v_1$ .. r, m $\vdash$ $e_n$ ~> $v_n$
-* **et** r'[$x_1=v_1 .. x_n=v_n$], m $\vdash$ blk ~> m'
-* **alors** r, m $\vdash$ (CALL $p e_1 .. e_n$) ~> m'
+* **et** r, m $\vdash$ $e_1$ $\leadsto$ $v_1$ .. r, m $\vdash$ $e_n$ $\leadsto$ $v_n$
+* **et** r'[$x_1=v_1 .. x_n=v_n$], m $\vdash$ blk $\leadsto$ m'
+* **alors** r, m $\vdash$ (CALL $p e_1 .. e_n$) $\leadsto$ m'
 
 # Cours 5
 
@@ -517,40 +520,40 @@ On note $\omega$ pour v ou $\emptyset$.
 Relation sémantique des instructions:
 
 * Env, Mem, Stat -> (Val, Mem)
-* r, m $\vdash$ s ~> ($\omega$, m')
+* r, m $\vdash$ s $\leadsto$ ($\omega$, m')
 
 #### RETURN
 
-Si r, m $\vdash$ e ~> v alors r, m $\vdash$ (RETURN e) ~> (v, m)
+Si r, m $\vdash$ e $\leadsto$ v alors r, m $\vdash$ (RETURN e) $\leadsto$ (v, m)
 
 #### Affectation
 
-Si r, m $\vdash$ (SET x e) ~> ($\emptyset$, m[r(x):=v])
+Si r, m $\vdash$ (SET x e) $\leadsto$ ($\emptyset$, m[r(x):=v])
 
 #### Boucle
 
-* Si r, m $\vdash$ e ~> #f alors  r, m $\vdash$ (WHILE e blk) ~> ($\emptyset$, m)
-* Si r, m $\vdash$ e ~> #t alors
-    * Si r, m $\vdash$ blk ~> ($\emptyset$, m') et r, m' $\vdash$ (WHILE e blk) ~> ($\omega$, m") alors r, m $\vdash$ (WHILE e blk) ~> ($\omega$, m")
-    * Si r, m $\vdash$ blk ~> (v, m') alors r, m ~> (WHILE e blk) ~> (v, m')
+* Si r, m $\vdash$ e $\leadsto$ #f alors  r, m $\vdash$ (WHILE e blk) $\leadsto$ ($\emptyset$, m)
+* Si r, m $\vdash$ e $\leadsto$ #t alors
+    * Si r, m $\vdash$ blk $\leadsto$ ($\emptyset$, m') et r, m' $\vdash$ (WHILE e blk) $\leadsto$ ($\omega$, m") alors r, m $\vdash$ (WHILE e blk) $\leadsto$ ($\omega$, m")
+    * Si r, m $\vdash$ blk $\leadsto$ (v, m') alors r, m $\leadsto$ (WHILE e blk) $\leadsto$ (v, m')
 
 #### Alternative
 
-* Si r, m $\vdash$ e ~> #t et r, m $\vdash$ blk1 ~> ($\omega$, m') alors r, m $\vdash$ (IF e blk1 blk2) ~> ($\omega$, m')
-* Si r, m $\vdash$ e ~> #f et r, m $\vdash$ blk2 ~> ($\omega$, m') alors r, m $\vdash$ (IF e blk1 blk2) ~> ($\omega$, m')
+* Si r, m $\vdash$ e $\leadsto$ #t et r, m $\vdash$ blk1 $\leadsto$ ($\omega$, m') alors r, m $\vdash$ (IF e blk1 blk2) $\leadsto$ ($\omega$, m')
+* Si r, m $\vdash$ e $\leadsto$ #f et r, m $\vdash$ blk2 $\leadsto$ ($\omega$, m') alors r, m $\vdash$ (IF e blk1 blk2) $\leadsto$ ($\omega$, m')
 
 #### Suites de commandes
 
 Pour toute instruction s et toute continuation cs:
-* Si r, m $\vdash$ s ~> ($\emptyset$, m') et r, m' $\vdash$ cs ~> ($\omega$, m") alors r, m $\vdash$ (s;cs) ~> ($\omega$, m")
-* Si r, m $\vdash$ s ~> (v, m') alors r, m $\vdash$ (s;cs) ~> (v, m')
+* Si r, m $\vdash$ s $\leadsto$ ($\emptyset$, m') et r, m' $\vdash$ cs $\leadsto$ ($\omega$, m") alors r, m $\vdash$ (s;cs) $\leadsto$ ($\omega$, m")
+* Si r, m $\vdash$ s $\leadsto$ (v, m') alors r, m $\vdash$ (s;cs) $\leadsto$ (v, m')
 
 #### Déclarations
 
 * Si d $\equiv$ CONST x e
-    * Si r, m $\vdash$ e ~> v et r[x=v], m $\vdash$ cs ~> ($\omega$, m') alors r, m $\vdash$ (d;cs) ~> ($\omega$, m')
+    * Si r, m $\vdash$ e $\leadsto$ v et r[x=v], m $\vdash$ cs $\leadsto$ ($\omega$, m') alors r, m $\vdash$ (d;cs) $\leadsto$ ($\omega$, m')
 * Si d $\equiv$ VAR x t
-    * Si r[x=a], m[x=new] $\vdash$ cs ~> ($\omega$, m') alors r, m $\vdash$ (d;cs) ~> ($\omega$, m')
+    * Si r[x=a], m[x=new] $\vdash$ cs $\leadsto$ ($\omega$, m') alors r, m $\vdash$ (d;cs) $\leadsto$ ($\omega$, m')
 
 ## Fonctions procédurales
 
@@ -574,17 +577,17 @@ Dec ::= ..
 
 ### Sémantique
 
-Relation sémantique des expressions: r, m $\vdash$ e ~> (v, m')
+Relation sémantique des expressions: r, m $\vdash$ e $\leadsto$ (v, m')
 
 Valeur d'une fonction procédurale: < bd, r+[x1=#] >
 
 #### Application
 
 * Si
-    * r, m $\vdash$ e ~> (< r'+[x1=#..xn=#]>, m')
-    * r, m' $\vdash$ e1 ~> (v1, m1) et .. et r, mn-1 $\vdash$ en ~> (vn, mn)
-    * r'[x1=v1]..[xn=vn], mn $\vdash$ bd ~> m"
-* alors r, m $\vdash$ (e e1 .. en) ~> (v, m")
+    * r, m $\vdash$ e $\leadsto$ (< r'+[x1=#..xn=#]>, m')
+    * r, m' $\vdash$ e1 $\leadsto$ (v1, m1) et .. et r, mn-1 $\vdash$ en $\leadsto$ (vn, mn)
+    * r'[x1=v1]..[xn=vn], mn $\vdash$ bd $\leadsto$ m"
+* alors r, m $\vdash$ (e e1 .. en) $\leadsto$ (v, m")
 
 ## Fonctions récursives
 
@@ -603,7 +606,7 @@ Valeur d'une fonction récursive: < bd, r+[f=!][$x_1$=#]..[$x_n$=#] >
 #### Application
 
 * Si
-    * r, m $\vdash$ e ~> (< r'+[f=!][$x_1$=#]..[$x_n$=#]>, m')
-    * r, m' $\vdash$ $e_1$ ~> ($v_1$, $m_1$) et .. et r, $m_n-1$ $\vdash$ en ~> ($v_n$, $m_n$)
-    * r'[f=< bd, r+[f=!][x1=#]..[xn=#] >][$x_1=v_1$]..[$x_n=v_n$], $m_n$ $\vdash$ bd ~> m"
-* alors r, m $\vdash$ (e $e_1$ .. $e_n$) ~> (v, m")
+    * r, m $\vdash$ e $\leadsto$ (< r'+[f=!][$x_1$=#]..[$x_n$=#]>, m')
+    * r, m' $\vdash$ $e_1$ $\leadsto$ ($v_1$, $m_1$) et .. et r, $m_n-1$ $\vdash$ en $\leadsto$ ($v_n$, $m_n$)
+    * r'[f=< bd, r+[f=!][x1=#]..[xn=#] >][$x_1=v_1$]..[$x_n=v_n$], $m_n$ $\vdash$ bd $\leadsto$ m"
+* alors r, m $\vdash$ (e $e_1$ .. $e_n$) $\leadsto$ (v, m")
