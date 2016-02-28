@@ -1,9 +1,12 @@
 % PC2R - Notes de TD
 % Jordi Bertran de Balanda
 
-# TD1
+# TD1 - Programmation Concurrente, Généralités
+
 ## Ex1. Processus
+
 ### Q1
+
 * OS:
    * décide de l'attribution des ressources
    * dirige le matériel par le logiciel
@@ -26,32 +29,38 @@ Ordonnanceur:
 * Efficace
 
 ### Q3
+
 ```
 S  = [(x:= x+1;x;x:=x+1)||x:=2*x]
 S' = [(x:=x+1;x:=x+1)||(wait(x=1);x:=2*x)]
 ```
-* Séquence bloquante: g_1;g_2
-* Séquence valeur 4: g_1;d_1;g_2;d_2
-* Séquence valeur 3: g_1;d_1;d_2;g_2
+
+* Séquence bloquante: $g_1;g_2$
+* Séquence valeur 4: $g_1;d_1;g_2;d_2$
+* Séquence valeur 3: $g_1;d_1;d_2;g_2$
 
 ### Q4. Exemple d'ordonnancement
 
-P1 = a_1; a_2;...a_N, P2 = b_1; b_2;...b_N
+P1 = $a_1; a_2;...a_N, P2 = b_1; b_2;...b_N$
+
 * Non-préemptif: une seule exécution possible
 * Préemptif:
-   * a_1;a_2;b_1;b_2
-   * b_1;b_2;a_1;a_2
-   * a_1;b_1;a_2;b_2
-   * a_1;b_1;b_2;a_2
-   * b_1;a_1;a_2;b_2
-   * b_1;a_1;b_2;a_2
-   * En général: {M+N} choose {N} = {(M+N)!}/{N!+M!}
+	* $a_1;a_2;b_1;b_2$
+	* $b_1;b_2;a_1;a_2$
+	* $a_1;b_1;a_2;b_2$
+	* $a_1;b_1;b_2;a_2$
+	* $b_1;a_1;a_2;b_2$
+	* $b_1;a_1;b_2;a_2$
+	* En général: ${{M+N}\choose{N}} = \frac{(M+N)!}{N!+M!}$
 
 ### Q5. Etats de processus
+
 Cf. feuille, diag. à faire
 
 ## Ex.2 Threads
+
 ### Q1
+
 **Thread** | **Processus**
 -|-
 Mémoire entièrement partagée | Propre mémoire
@@ -60,12 +69,15 @@ Environnement partagé | Propre environnement
 CS peu couteux | CS couteux
 
 ### Q2
+
 Processus légers: pas de clonage, environnement partagé.
 
 ### Q3. Gestion des threads
+
 La gestion des threads est faite par le processus qui les a créés (!= threads noyau géré par le système, ordonnancés \emph{avec} les processus).
 
 ### Q4. Contraintes d'ordonnancement
+
 * non déterminisme
 * difficulté de compréhension
 * gestion de la mémoire partagée
@@ -75,6 +87,7 @@ La gestion des threads est faite par le processus qui les a créés (!= threads 
 * attente active
 
 ## Ex3. Diner des philosophes
+
 cf. feuille, diag à faire
 ```
 P(g, d):
@@ -86,19 +99,25 @@ P(g, d):
 6    RELEASE g
 7    GOTO 1
 ```
+
 État d'interlocage: tous les philosophes prennent g.
 
 ### Q1
+
 Tous les processus n'exécutent pas le meme programme selon leur parité.
 
 Les processus pairs commencent par prendre à droite et les impairs à gauche ou inversement.
 
 #### Q2. Chandy-Misra
+
 Flags sur les fourchettes
 
-# TD 2
+# TD2 - Ordonnanceur et Threads (POSIX/Fair)
+
 ## Ex1. Chemin de fer
+
 ### Q1.
+
 ```c
 typedef enum { ROUGE = 0; VERT = 1 } Feu;
 typedef enum { ALLUME = 1; ETEINT = 0} Detecteur;
@@ -112,21 +131,27 @@ Detecteur out1 = ETEINT;
 Detecteur out2 = ETEINT;
 ```
 ### Q2.
-2^6 états possibles.
 
-### Q3.
+$2^6$ états possibles.
+
+### Q3.
+
 * Incohérence: feu1 et feu2 verts, in1 et in2 allumés, out1 et out2 éteints
 * Deadlock: feu1 et feu2 rouges, in1 et in2 allumés, out1 et out2 éteints
 
 ### Q4.
+
 État avec in1 allumé ne passant pas jusqu'à un état avec out1 allumé.
 
 ## Ex2. Rappels fair threads
+
 ### Q1.
+
 * **Fair Threads** Coopératifs (*A l'intérieur d'un scheduler!*)
 * **Threads POSIX** Préemptifs
 
 ### Q2.
+
 ```c
 include "fthread.h"
 
@@ -172,10 +197,13 @@ int main () {
     return 0;
 }
 ```
+
 Avec 4 schedulers: exécution comme sans les fair threads.
 
 ## Ex3. Attentes actives
+
 ### Q1.
+
 ```c
 int n = 0;
 pthread_mutex_t mutex;
@@ -212,10 +240,13 @@ int main () {
     ...
 }
 ```
+
 Soucis: attente active dans le for du lecteur.
+
 Solution: variables de condition.
 
 ### Q2.
+
 ```c
 pthread_cond_t condition =PTHREAD_COND_INITIALIZER;
 
@@ -235,21 +266,27 @@ void * requete () {
 ```
 
 ## Ex4. Envoi/Attente
+
 ### Q1.
+
 ```c
 ft_event_t evt;
 ft_thread_await(evt);
 printf("Evènement reçu\n");
 ft_thread_cooperate ();
 ```
+
 ### Q2.
+
 ```
 ft_thread_cooperate_n(7);
 ...
 ```
 
-# TD 3
+# TD3 - Threads OCAML/Java
+
 ## Ex. 1 - Comptage au musée
+
 ```ocaml
 let compteur = ref 0;
 let cle = Mutex.create();
@@ -275,9 +312,12 @@ let sortie  =
 
 ## Ex. 2 - Scanner et imprimante
 
-# TD 4
+# TD4 - Sockets et Client/Serveur
+
 ## Ex1. Serveur d'echo
-### Q1. Serveur
+
+### Q1. Serveur
+
 ```java
 public class Serveur extends Thread {
     BufferedReader inchan;
@@ -321,10 +361,13 @@ public class Serveur extends Thread {
     }
 }
 ```
+
 ### Q2.
+
 Pas de concurrence, un seul client à la fois. Les threads, c'est plus mieux.
 
 ### Q3.
+
 ```java
 public class ServeurThread {
     ServerSocket serv;
@@ -380,6 +423,7 @@ public class Connexion extends Thread {
     }
 }
 ```
+
 ### Q6.
 
 ```java
@@ -403,8 +447,11 @@ public class EchoServer {
 public class EchoClient {
 
 }
+
 ```
+
 ### Q8.
+
 ```ocaml
 (* Compilation: 	ocamlc -o server -thread -custom unix.cma threads.cma server.ml *)
 let creer_serveur port max_con =
@@ -442,33 +489,43 @@ let main () =
 let _ = main()
 ```
 
-# TD 5
+# TD5 - Events et Canaux Synchrones
+
 ## Rappels - canaux synchrones
+
 ```ocaml
 new_channel
 receive : 'a channel -> 'a event
 send: 'a channel -> 'a -> unit event
 sync: 'a event -> 'a
 ```
+
 ## Ex1. Mobilité - Vente en ligne
+
 ### Q1.
+
 Cf. feuille de TD.
 
 Types des canaux:
+
 * n: string channel
 * c1, c2: string channel channel
 * i: (string, string channel channel) channel
 * s: (string, string channel) channel
 
 ### Q2.
+
 #### Vendeur (S)
+
 ```ocaml
 let rec vendeur n =
     let (chan, prod) = sync (receive c_vendeur) in
         sync (send chan (prod ^ " " ^ (string_of_int n)));
     vendeur (n + 1)
 ```
+
 #### Intermédiaire (I)
+
 ```ocaml
 let chan_broker = new_channel ();;
 let chan_seller = new_channel ();;
@@ -480,7 +537,9 @@ let rec intermediaire () =
         sync(send chan_buyer nu_c);
     intermediaire ()
 ```
+
 #### Client (Cx)
+
 ```ocaml
 let rec buyer args =
     let (a, n, c_buy, log, varlog) = args in
@@ -494,6 +553,7 @@ let rec buyer args =
 ```
 
 #### Main
+
 ```ocaml
 let c_sell = new_channel ()
 and c_brok = new_channel ()
@@ -528,6 +588,7 @@ let rec consumer () =
 ```
 
 ## Ex6. Futurs
+
 ```ocaml
 type 'a' future = ('a channel * bool ref)
 
