@@ -13,13 +13,11 @@ Code source: suite de caractères obéissant à des règles de syntaxe.
 
 Syntaxe:
 
-* Lexique: ensemble d'unités lexicales (mots/symboles)
-* Grammaire: règles d'agencement des mots
-
-définit les suites de caractères qui sont des programmes
-
-donne un procédé de construction d'un mécanisme de
-reconnaissance des programmes (automates, langages formels)
+* Composée de:
+	* Lexique: ensemble d'unités lexicales (mots/symboles)
+	* Grammaire: règles d'agencement des mots
+* définit les suites de caractères qui sont des programmes
+* donne un procédé de construction d'un mécanisme de reconnaissance des programmes (automates, langages formels)
 
 ### Sémantique
 

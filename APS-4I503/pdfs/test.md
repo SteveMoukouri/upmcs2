@@ -1,5 +1,0 @@
-# Header
-
-```
-$lel \neq lol$
-```
