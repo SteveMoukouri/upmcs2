@@ -1,3 +1,6 @@
+% APS - Notes de TD
+% Jordi Bertran de Balanda
+
 # TD 1 - Lex / Yacc
 
 ## Exercice 1
