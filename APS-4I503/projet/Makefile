@@ -6,11 +6,8 @@ parser: aps.y
 lexer: aps.l
 	flex aps.l
 
-ast: ast.c ast.h
-	gcc -c ast.c
-
-aps: parser lexer ast
-	gcc -o aps ast.o lex.yy.c aps.tab.c -lfl
+aps: parser lexer ast.c
+	gcc -g -o aps ast.c lex.yy.c aps.tab.c -lfl
 
 clean:
-	rm -f *tab.* lex.yy.c aps *~
+	rm -f *tab.* lex.yy.c aps *~ *.o

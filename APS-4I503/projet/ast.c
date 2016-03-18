@@ -3,8 +3,10 @@
 #include <string.h>
 #include "ast.h"
 
+#define debug(str) {fprintf(stderr, "%s\n", str); fflush(stderr);}
 
 AST* make_prog (AST* cmds) {
+  debug("prog");
   AST* ast = malloc(sizeof(*ast));
   ast->type = T_PROG;
   ast->content.asProg->cmds = cmds;
@@ -12,6 +14,7 @@ AST* make_prog (AST* cmds) {
 }
 
 AST* make_cmds (AST* statDec, AST* next) {
+  debug("cmds");
   AST* ast = malloc(sizeof(*ast));
   ast->type = T_CMDS;
   ast->content.asCmds = malloc(sizeof(Cmds));
@@ -21,6 +24,7 @@ AST* make_cmds (AST* statDec, AST* next) {
 }
 
 AST* make_dec (TypeDec ast_type, AST* dec_type, char* ident, AST* expr) {
+  debug("Dec");
   AST* ast = malloc(sizeof(*ast));
   ast->type = T_DEC;
   ast->content.asDec = malloc(sizeof(Dec));
@@ -32,6 +36,7 @@ AST* make_dec (TypeDec ast_type, AST* dec_type, char* ident, AST* expr) {
 }
 
 AST* make_stat (TypeStat statType, char* ident, AST* expr, AST* prog1, AST* prog2) {
+  debug("Stat");
   AST* ast = malloc(sizeof(*ast));
   ast->type = T_STAT;
   ast->content.asStat = malloc(sizeof(Stat));
@@ -44,6 +49,7 @@ AST* make_stat (TypeStat statType, char* ident, AST* expr, AST* prog1, AST* prog
 }
 
 AST* make_expr (TypeExpr exprType, Bool bool, int num, char* ident, Operators op, AST* expr1, AST* expr2) {
+  debug("Expr");
   AST* ast = malloc(sizeof(*ast));
   ast->type = T_EXPR;
   ast->content.asExpr = malloc(sizeof(Expr));
@@ -71,10 +77,31 @@ AST* make_expr (TypeExpr exprType, Bool bool, int num, char* ident, Operators op
 }
 
 AST* make_type (PrimitiveType t) {
+  debug("Type");
   Type res = malloc(sizeof(*res));
   *res = t;
   AST* ast = malloc(sizeof(*ast));
   ast->type = T_TYPE;
   ast->content.asType = res;
   return ast;
+}
+
+AST* make_bool_expr(Bool b) {
+  return make_expr(T_E_BOOL, b, -1, NULL, -1, NULL, NULL);
+}
+
+AST* make_integer_expr(int num) {
+  return make_expr(T_NUM, -1, num, NULL, -1, NULL, NULL);
+}
+
+AST* make_ident_expr(char* ident) {
+  return make_expr(T_IDENT, -1, -1, ident, -1, NULL, NULL);
+}
+
+AST* make_unary_expr(Operators op, AST* expr) {
+  return make_expr(T_UNOP, -1, -1, NULL, op, expr, NULL);
+}
+
+AST* make_binary_expr(Operators op, AST* expr1, AST* expr2) {
+  return make_expr(T_BINOP, -1, -1, NULL, op, expr1, expr2);
 }
