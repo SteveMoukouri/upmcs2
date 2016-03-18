@@ -4,7 +4,7 @@
   #include "aps.tab.h"
 %}
 
-ident  [a-z][a-zA-Z0-9_]*
+ident  [a-z]+
 nombre [0-9]+
 
 %%
@@ -23,6 +23,7 @@ nombre [0-9]+
 "sub"     {  return SUB; }
 "div"     {  return DIV; }
 "mul"     {  return MUL; }
+"mod"     {  return MOD; }
 
 "void"    {  return VOID; }
 "bool"    {  return BOOL; }

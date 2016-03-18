@@ -1,20 +1,26 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include "types.h"
 #include "ast.h"
 
+#ifdef DEBUG
 #define debug(str) {fprintf(stderr, "%s\n", str); fflush(stderr);}
+#else
+#define debug(str) ;
+#endif
 
 AST* make_prog (AST* cmds) {
-  debug("prog");
+  debug("Prog");
   AST* ast = malloc(sizeof(*ast));
   ast->type = T_PROG;
+  ast->content.asProg = malloc(sizeof(Prog));
   ast->content.asProg->cmds = cmds;
   return ast;
 }
 
 AST* make_cmds (AST* statDec, AST* next) {
-  debug("cmds");
+  debug("Cmds\n");
   AST* ast = malloc(sizeof(*ast));
   ast->type = T_CMDS;
   ast->content.asCmds = malloc(sizeof(Cmds));
@@ -24,7 +30,6 @@ AST* make_cmds (AST* statDec, AST* next) {
 }
 
 AST* make_dec (TypeDec ast_type, AST* dec_type, char* ident, AST* expr) {
-  debug("Dec");
   AST* ast = malloc(sizeof(*ast));
   ast->type = T_DEC;
   ast->content.asDec = malloc(sizeof(Dec));
@@ -36,7 +41,6 @@ AST* make_dec (TypeDec ast_type, AST* dec_type, char* ident, AST* expr) {
 }
 
 AST* make_stat (TypeStat statType, char* ident, AST* expr, AST* prog1, AST* prog2) {
-  debug("Stat");
   AST* ast = malloc(sizeof(*ast));
   ast->type = T_STAT;
   ast->content.asStat = malloc(sizeof(Stat));
@@ -49,7 +53,6 @@ AST* make_stat (TypeStat statType, char* ident, AST* expr, AST* prog1, AST* prog
 }
 
 AST* make_expr (TypeExpr exprType, Bool bool, int num, char* ident, Operators op, AST* expr1, AST* expr2) {
-  debug("Expr");
   AST* ast = malloc(sizeof(*ast));
   ast->type = T_EXPR;
   ast->content.asExpr = malloc(sizeof(Expr));
@@ -65,9 +68,11 @@ AST* make_expr (TypeExpr exprType, Bool bool, int num, char* ident, Operators op
     ast->content.asExpr->contents.ident = ident;
     break;
   case T_UNOP:
+    ast->content.asExpr->contents.unop = malloc(sizeof(UnOp));
     ast->content.asExpr->contents.unop->op = op;
     ast->content.asExpr->contents.unop->arg = expr1;
   case T_BINOP:
+    ast->content.asExpr->contents.binop = malloc(sizeof(BinOp));;
     ast->content.asExpr->contents.binop->op = op;
     ast->content.asExpr->contents.binop->arg1 = expr1;
     ast->content.asExpr->contents.binop->arg2 = expr2;
@@ -76,8 +81,33 @@ AST* make_expr (TypeExpr exprType, Bool bool, int num, char* ident, Operators op
   return ast;
 }
 
+AST* make_var(char* ident, AST* type) {
+  debug("Var\n");
+  return make_dec(T_VAR, type, ident, NULL);
+}
+
+AST* make_cst(char* ident, AST* type, AST* expr) {
+  debug("Cst\n");
+  return make_dec(T_CONST, type, ident, expr);
+}
+
+AST* make_set(char* ident, AST* expr) {
+  debug("Set\n");
+  return make_stat(T_SET, ident, expr, NULL, NULL);
+}
+
+AST* make_cond(AST* cond, AST* cons, AST* alt) {
+  debug("Cond\n");
+  return make_stat(T_IF, NULL, cond, cons, alt);
+}
+
+AST* make_loop(AST* cond, AST* body) {
+  debug("Loop\n");
+  return make_stat(T_WHILE, NULL, cond, body, NULL);
+}
+
 AST* make_type (PrimitiveType t) {
-  debug("Type");
+  debug("Type\n");
   Type res = malloc(sizeof(*res));
   *res = t;
   AST* ast = malloc(sizeof(*ast));
@@ -87,21 +117,26 @@ AST* make_type (PrimitiveType t) {
 }
 
 AST* make_bool_expr(Bool b) {
+  debug("Bool_Expr\n");
   return make_expr(T_E_BOOL, b, -1, NULL, -1, NULL, NULL);
 }
 
 AST* make_integer_expr(int num) {
+  debug("Int_Expr");
   return make_expr(T_NUM, -1, num, NULL, -1, NULL, NULL);
 }
 
 AST* make_ident_expr(char* ident) {
+  debug("Ident_Expr");
   return make_expr(T_IDENT, -1, -1, ident, -1, NULL, NULL);
 }
 
 AST* make_unary_expr(Operators op, AST* expr) {
+  debug("Unary_Expr\n");
   return make_expr(T_UNOP, -1, -1, NULL, op, expr, NULL);
 }
 
 AST* make_binary_expr(Operators op, AST* expr1, AST* expr2) {
+  debug("Binary_Expr\n");
   return make_expr(T_BINOP, -1, -1, NULL, op, expr1, expr2);
 }

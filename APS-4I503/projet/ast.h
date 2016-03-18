@@ -4,9 +4,11 @@
 
 AST* make_prog (AST* cmds);
 AST* make_cmds (AST* statDec, AST* next);
-AST* make_dec (TypeDec ast_type, AST* dec_type, char* ident, AST* expr);
-AST* make_stat (TypeStat statType, char* ident, AST* expr, AST* prog1, AST* prog2);
-AST* make_expr (TypeExpr exprType, Bool bool, int num, char* ident, Operators op, AST* expr1, AST* expr2);
+AST* make_var (char* ident, AST* type);
+AST* make_cst(char* ident, AST* type, AST* expr);
+AST* make_set(char* ident, AST* expr);
+AST* make_cond(AST* cond, AST* cons, AST* alt);
+AST* make_loop(AST* cond, AST* body);
 AST* make_type (PrimitiveType t);
 AST* make_bool_expr (Bool b);
 AST* make_integer_expr (int n);

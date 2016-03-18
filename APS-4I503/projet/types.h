@@ -5,7 +5,7 @@ typedef enum _typeNode  { T_PROG, T_CMDS, T_DEC, T_STAT, T_EXPR, T_TYPE } TypeNo
 typedef enum _typeDec   { T_CONST, T_VAR } TypeDec;
 typedef enum _typeStat  { T_SET, T_IF, T_WHILE } TypeStat;
 typedef enum _typeExpr  { T_E_BOOL, T_NUM, T_IDENT, T_UNOP, T_BINOP } TypeExpr;
-typedef enum _operators { T_NOT, T_AND, T_OR, T_EQ, T_LT, T_ADD, T_SUB, T_MUL, T_DIV } Operators;
+typedef enum _operators { T_NOT, T_AND, T_OR, T_EQ, T_LT, T_ADD, T_SUB, T_MUL, T_DIV, T_MOD } Operators;
 typedef enum _types     { T_VOID, T_BOOL, T_INT } PrimitiveType;
 typedef enum _bool      { T_TRUE, T_FALSE } Bool;
 
