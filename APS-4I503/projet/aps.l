@@ -1,7 +1,7 @@
 %{
-  #include <string.h>
-  #include <stdlib.h>
-  #include "aps.tab.h"
+#include <string.h>
+#include <stdlib.h>
+#include "aps.tab.h"
 %}
 
 ident  [a-z]+
@@ -30,7 +30,7 @@ nombre [0-9]+
 "int"     {  return INT;  }
 
 {ident}     { yylval.str    = strdup(yytext);  return IDENT; }
-{nombre}    { yylval.entier = atoi(yytext);  return NOMBRE;  }
+{nombre}    { yylval.entier = atoi(yytext);   return NOMBRE; }
 
 "WHILE"   {  return WHILE; }
 "SET"     {  return SET;   }

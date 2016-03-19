@@ -1,17 +1,16 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "types.h"
 #include "ast.h"
 
-#ifdef DEBUG
-#define debug(str) {fprintf(stderr, "%s\n", str); fflush(stderr);}
+#ifdef DEBUG_AST
+#define debug_ast(str) {fprintf(stderr, "%s\n", str); fflush(stderr);}
 #else
-#define debug(str) ;
+#define debug_ast(str) ;
 #endif
 
 AST* make_prog (AST* cmds) {
-  debug("Prog");
+  debug_ast("Prog");
   AST* ast = malloc(sizeof(*ast));
   ast->type = T_PROG;
   ast->content.asProg = malloc(sizeof(Prog));
@@ -20,7 +19,7 @@ AST* make_prog (AST* cmds) {
 }
 
 AST* make_cmds (AST* statDec, AST* next) {
-  debug("Cmds\n");
+  debug_ast("Cmds\n");
   AST* ast = malloc(sizeof(*ast));
   ast->type = T_CMDS;
   ast->content.asCmds = malloc(sizeof(Cmds));
@@ -82,32 +81,32 @@ AST* make_expr (TypeExpr exprType, Bool bool, int num, char* ident, Operators op
 }
 
 AST* make_var(char* ident, AST* type) {
-  debug("Var\n");
+  debug_ast("Var\n");
   return make_dec(T_VAR, type, ident, NULL);
 }
 
 AST* make_cst(char* ident, AST* type, AST* expr) {
-  debug("Cst\n");
+  debug_ast("Cst\n");
   return make_dec(T_CONST, type, ident, expr);
 }
 
 AST* make_set(char* ident, AST* expr) {
-  debug("Set\n");
+  debug_ast("Set\n");
   return make_stat(T_SET, ident, expr, NULL, NULL);
 }
 
 AST* make_cond(AST* cond, AST* cons, AST* alt) {
-  debug("Cond\n");
+  debug_ast("Cond\n");
   return make_stat(T_IF, NULL, cond, cons, alt);
 }
 
 AST* make_loop(AST* cond, AST* body) {
-  debug("Loop\n");
+  debug_ast("Loop\n");
   return make_stat(T_WHILE, NULL, cond, body, NULL);
 }
 
 AST* make_type (PrimitiveType t) {
-  debug("Type\n");
+  debug_ast("Type\n");
   Type res = malloc(sizeof(*res));
   *res = t;
   AST* ast = malloc(sizeof(*ast));
@@ -117,26 +116,26 @@ AST* make_type (PrimitiveType t) {
 }
 
 AST* make_bool_expr(Bool b) {
-  debug("Bool_Expr\n");
+  debug_ast("Bool_Expr\n");
   return make_expr(T_E_BOOL, b, -1, NULL, -1, NULL, NULL);
 }
 
 AST* make_integer_expr(int num) {
-  debug("Int_Expr");
+  debug_ast("Int_Expr");
   return make_expr(T_NUM, -1, num, NULL, -1, NULL, NULL);
 }
 
 AST* make_ident_expr(char* ident) {
-  debug("Ident_Expr");
+  debug_ast("Ident_Expr");
   return make_expr(T_IDENT, -1, -1, ident, -1, NULL, NULL);
 }
 
 AST* make_unary_expr(Operators op, AST* expr) {
-  debug("Unary_Expr\n");
+  debug_ast("Unary_Expr\n");
   return make_expr(T_UNOP, -1, -1, NULL, op, expr, NULL);
 }
 
 AST* make_binary_expr(Operators op, AST* expr1, AST* expr2) {
-  debug("Binary_Expr\n");
+  debug_ast("Binary_Expr\n");
   return make_expr(T_BINOP, -1, -1, NULL, op, expr1, expr2);
 }

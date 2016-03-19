@@ -1,189 +1,212 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "types.h"
 #include "ast.h"
 #include "prolog_gen.h"
 
-char* concat2(char* str1, char* str2) {
-  char *result = malloc(strlen(str1) + strlen(str2) + 1);
-  strcpy(result, str1);
-  strcat(result, str2);
-  return result;
+#define DEBUG_PLG 1
+
+#ifdef DEBUG_PLG
+#define debug_plg(str) {fprintf(stderr, "%s\n", str); fflush(stderr);}
+#else
+#define debug_plg(str) ;
+#endif
+
+
+void print_cmds(FILE* f, AST* cmds);
+void print_seq(FILE* f, Cmds* cmds);
+void print_dec(FILE* f, AST* dec);
+void print_stat(FILE* f, AST* stat);
+void print_expr(FILE* f, AST* expr);
+void print_type(FILE* f, AST* type);
+
+void print_prog(FILE* f, AST* prog) {
+  debug_plg("Prog");
+  fprintf(f, "prog(");
+  print_cmds(f, prog->content.asProg->cmds);
+  fprintf(f, ")");
 }
 
-char* concat3(char* str1, char* sep, char* str2) {
-  char *result = malloc(strlen(str1) + strlen(sep) + strlen(str2)+1);
-  strcpy(result, str1);
-  strcat(result, sep);
-  strcat(result, str2);
-  return result;
+void print_cmds(FILE* f, AST* cmds) {
+  debug_plg("Cmds");
+  fprintf(f, "[");
+  print_seq(f, cmds->content.asCmds);
+  fprintf(f, "]");
 }
 
-char* concat5(char* str1, char* str2, char* str3, char* str4, char* str5) {
-  char *result = malloc(strlen(str1) + strlen(str2) + strlen(str3)
-			+ strlen(str4) + strlen(str5)+1);
-  strcpy(result, str1);
-  strcat(result, str2);
-  strcat(result, str3);
-  strcat(result, str4);
-  strcat(result, str5);
-  return result;
-}
-
-char* concat7(char* str1, char* str2, char* str3, char* str4, char* str5, char* str6, char* str7) {
-  char *result = malloc(strlen(str1) + strlen(str2) + strlen(str3)
-			+ strlen(str4) + strlen(str5) + strlen(str6)
-			+ strlen(str7)+1);
-  strcpy(result, str1);
-  strcat(result, str2);
-  strcat(result, str3);
-  strcat(result, str4);
-  strcat(result, str5);
-  strcat(result, str6);
-  strcat(result, str7);
-  return result;
-}
-
-
-char* application_unary(char* app, char* arg) {
-  char *result = malloc(3 + 1 + strlen(app) + 1 + 1 + strlen(arg) + 1 + 1 + 1);
-  //                    app (    fonction     ,   [    argument     ]   )   \0
-  strcpy(result, "app(");
-  strcat(result, app);
-  strcat(result, ",[");
-  strcat(result, arg);
-  strcat(result, "])");
-  return result;
-}
-
-char* application_binary(char* app, char* arg1, char* arg2) {
-  char *result = malloc(4 + strlen(app) + 2 + strlen(arg1) + 1 + strlen(arg2) + 3);
-  //                    app(  fonction  ,[    argument 1     ,   argument 2   ])\0
-  strcpy(result, "app(");
-  strcat(result, app);
-  strcat(result, ",[");
-  strcat(result, arg1);
-  strcat(result, ",");
-  strcat(result, arg2);
-  strcat(result, "])");
-  return result;
-}
-
-char* operator_binary(char* op, char* arg1, char* arg2) {
-  char *result = malloc(strlen(op) + 1 + strlen(arg1) + 1 + strlen(arg2) + 2);
-  //                    operator     (    argument 1     ,   argument 2   )\0
-  strcpy(result, op);
-  strcat(result, "(");
-  strcat(result, arg1);
-  strcat(result, ",");
-  strcat(result, arg2);
-  strcat(result, ")");
-  return result;
-}
-
-
-char* itoa(int a) {
-  int length = a / 10 + 1;
-  char *result = malloc(length * sizeof(char));
-  sprintf(result, "%d", a);
-  return result;
-}
-
-char* make_prolog(AST* ast) {
-  if (ast) {
-    switch (ast->type) {
-    case T_PROG:
-      concat3("prog([", make_prolog(ast->asProg), "])");
-      break;
-    case T_CMDS:
-      concat3("[", , "]");
+// TODO
+void print_seq(FILE* f, Cmds* cmds) {
+  debug_plg("Seq");
+  while(cmds) {
+    AST* statdec = cmds->statDec;
+    switch (statdec->type) {
+    case T_STAT:
+      if (cmds->next) {
+	print_stat(f, statdec);
+	fprintf(f, ",");
+      }
+      else 
+	print_stat(f, statdec);
       break;
     case T_DEC:
-      switch (ast->asDec.type) {
-      case T_CONST:
-	
-	break;
-      case T_VAR:
-	break;
-      default:
-	fprintf(stderr, "Unknown declaration type!\n");
-	exit(EXIT_FAILURE);
+      if (cmds->next) {
+	print_dec(f, statdec);
+	fprintf(f, ",");
       }
+      else
+	print_dec(f, statdec);
       break;
-    case T_STAT:
-      switch (ast->asStat.type) {
-      case T_SET:
-	break;
-      case T_IF:
-	break;
-      case T_WHILE:
-	break;
-      default:
-	fprintf(stderr, "Unknown statement type!\n");
-	exit(EXIT_FAILURE);
-      }
-      break;
-    case T_EXPR:
-      Expr* expr = ast->asExpr;
-      switch (expr.type) {
-      case T_E_BOOL:
-	break;
-      case T_NUM:
-	break;
-      case T_IDENT:
-	break;
-      case T_UNOP:
-	break;
-      case T_BINOP:
-	Binop* b = expr.contents->binop;
-	switch (b->op) {
-	case T_NOT:
-	  break;
-	case T_AND:
-	  break;
-	case T_OR:
-	  break;
-	case T_EQ:
-	  break;
-	case T_LT:
-	  break;
-	case T_ADD:
-	  break;
-	case T_SUB:
-	  break;
-	case T_MUL:
-	  break;
-	case T_DIV:
-	  break;
-	case T_MOD
-	  break;
-	default:
-	  fprintf(stderr, "Unknown operand!\n");
-	  exit(EXIT_FAILURE);
-	}
-	break;
-      default:
-	fprintf(stderr, "Unknown expression type!\n");
-	exit(EXIT_FAILURE);
-      }
-      break;
-    case T_TYPE:
-      switch (*(ast->asType)) {
-      case T_VOID:
-	break;
-      case T_BOOL:
-	break;
-      case T_INT:
-	break;
-      default:
-	fprintf(stderr, "Unknown type!\n");
-	exit(EXIT_FAILURE);
-      }
-      break;
-    default:
-      fprintf(stderr, "Unknown AST node type!\n");
-      exit(EXIT_FAILURE);
     }
-  } 
+    if (!cmds->next)
+      break;
+    cmds = cmds->next->content.asCmds;
+  }
+}
+
+void print_dec(FILE* f, AST* dec) {
+  debug_plg("Dec");
+  Dec* decl = dec->content.asDec;
+  switch (decl->type) {
+  case T_CONST:
+    fprintf(f, "const(%s,", decl->ident);
+    print_type(f, decl->decType);
+    fprintf(f, ",");
+    print_expr(f, decl->expr);
+    fprintf(f, ")");
+    break;
+  case T_VAR:
+    fprintf(f, "var(%s,", decl->ident);
+    print_type(f, decl->decType);
+    fprintf(f, ")");
+    break;
+  default:
+    fprintf(stderr, "Unknown declaration type!\n");
+    exit(EXIT_FAILURE);
+  }
+}
+
+void print_stat(FILE* f, AST* st) {
+  debug_plg("Stat");
+  Stat* stat = st->content.asStat;
+  switch (stat->type) {
+  case T_SET:
+    fprintf(f, "set(%s,", stat->ident);
+    print_expr(f, stat->expr);
+    fprintf(f, ")");
+    break;
+  case T_IF:
+    fprintf(f, "if(");
+    print_expr(f, stat->expr);
+    fprintf(f, ",");
+    print_prog(f, stat->prog1);
+    fprintf(f, ",");
+    print_prog(f, stat->prog2);
+    fprintf(f, ")");
+    break;
+  case T_WHILE:
+    fprintf(f, "while(");
+    print_expr(f, stat->expr);
+    fprintf(f, ",");
+    print_prog(f, stat->prog1);
+    fprintf(f, ")");
+    break;
+  default:
+    fprintf(stderr, "Unknown statement type!\n");
+    exit(EXIT_FAILURE);
+  }
+}
+
+void print_expr(FILE* f, AST* exp) {
+  debug_plg("Expr");
+  Expr* expr = exp->content.asExpr;
+  switch (expr->type) {
+  case T_E_BOOL:
+    if (expr->contents.bool == T_TRUE)
+      fprintf(f, "true");
+    else
+      fprintf(f, "false");
+    break;
+  case T_NUM:
+    fprintf(f, "%d", expr->contents.num);
+    break;
+  case T_IDENT:
+    fprintf(f, "%s", expr->contents.ident);
+    break;
+  case T_UNOP:
+    {
+      UnOp* un = expr->contents.unop;
+      switch (un->op) {
+      case T_NOT:
+	fprintf(f, "not(");
+	break;
+      default:
+	fprintf(stderr, "Unknown operand!\n");
+	exit(EXIT_FAILURE);
+      }
+      print_expr(f, un->arg);
+      fprintf(f, ")");
+      break;
+    }
+  case T_BINOP:
+    {
+      BinOp* bin = expr->contents.binop;
+      switch (bin->op) {
+      case T_NOT:
+	fprintf(f, "not(");
+	break;
+      case T_AND:
+	fprintf(f, "and(");
+	break;
+      case T_OR:
+	fprintf(f, "or(");
+	break;
+      case T_EQ:
+	fprintf(f, "eq(");
+	break;
+      case T_LT:
+	fprintf(f, "lt(");
+	break;
+      case T_ADD:
+	fprintf(f, "add(");
+	break;
+      case T_SUB:
+	fprintf(f, "sub(");
+	break;
+      case T_MUL:
+	fprintf(f, "mul(");
+	break;
+      case T_DIV:
+	fprintf(f, "div(");
+	break;
+      case T_MOD:
+	fprintf(f, "mod(");
+	break;
+      default:
+	fprintf(stderr, "Unknown operand!\n");
+	exit(EXIT_FAILURE);
+      }
+      print_expr(f, bin->arg1);
+      fprintf(f, ",");
+      print_expr(f, bin->arg2);
+      fprintf(f, ")");
+    }
+    break;
+  default:
+    fprintf(stderr, "Unknown expression type!\n");
+    exit(EXIT_FAILURE);
+  }
+}
+
+void print_type(FILE* f, AST* type) {
+  debug_plg("Type");
+  switch (*(type->content.asType)) {
+  case T_VOID:
+    fprintf(f, "void");
+    break;
+  case T_BOOL:
+    fprintf(f, "bool");
+    break;
+  case T_INT:
+    fprintf(f, "int");
+  }
 }

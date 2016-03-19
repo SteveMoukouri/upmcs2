@@ -5,10 +5,12 @@
   #include <stdlib.h>
   #include <stdio.h>
   #include <string.h>
+  #include "prolog_gen.h"
   #include "ast.h"
-  #include "types.h"
 
   extern FILE *yyin;
+  
+  AST* ast_result;
 
   int yyerror(const char *message) {
     fprintf(stderr, "%s\n", message);
@@ -36,7 +38,7 @@
 %%
 
 
-Prog: '[' Cmds ']'    { $$ = make_prog($2); }
+Prog: '[' Cmds ']'    { $$ = make_prog($2); ast_result = $$; }
 
 Cmds: Stat InterStat             { $$ = make_cmds($1, $2); }
 	|      	Dec ';' Cmds     { $$ = make_cmds($1, $3); }
@@ -75,20 +77,9 @@ Type: VOID                { $$ = make_type(T_VOID); }
 
 %%
 
-int main(int argc, char* argv[]) {
-  FILE *fp;
-  if (argc > 1) {
-    if (! (fp = fopen(argv[1], "r"))) {
-      fprintf(stderr, "Error, can't open %s\n", argv[1]);
-      exit(1);
-    }
+AST* ast_from_program(FILE* fp) {
     yyin = fp;
     yyparse();
     fclose(fp);
-    printf("Expected -- prog([set(x,22),while(app(lt, [x, 42]), [set(x, app(add, [x, 1]))])])\n");
-} else {
-    fprintf(stderr, "Error, no file specified\n");
-    exit(1);
-  }
-  return 0;
+    return ast_result;
 }
