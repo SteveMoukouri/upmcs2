@@ -19,7 +19,7 @@ AST* make_prog (AST* cmds) {
 }
 
 AST* make_cmds (AST* statDec, AST* next) {
-  debug_ast("Cmds\n");
+  debug_ast("Cmds");
   AST* ast = malloc(sizeof(*ast));
   ast->type = T_CMDS;
   ast->content.asCmds = malloc(sizeof(Cmds));
@@ -81,32 +81,37 @@ AST* make_expr (TypeExpr exprType, Bool bool, int num, char* ident, Operators op
 }
 
 AST* make_var(char* ident, AST* type) {
-  debug_ast("Var\n");
+  debug_ast("Var");
   return make_dec(T_VAR, type, ident, NULL);
 }
 
 AST* make_cst(char* ident, AST* type, AST* expr) {
-  debug_ast("Cst\n");
+  debug_ast("Cst");
   return make_dec(T_CONST, type, ident, expr);
 }
 
 AST* make_set(char* ident, AST* expr) {
-  debug_ast("Set\n");
+  debug_ast("Set");
   return make_stat(T_SET, ident, expr, NULL, NULL);
 }
 
 AST* make_cond(AST* cond, AST* cons, AST* alt) {
-  debug_ast("Cond\n");
+  debug_ast("Cond");
   return make_stat(T_IF, NULL, cond, cons, alt);
 }
 
 AST* make_loop(AST* cond, AST* body) {
-  debug_ast("Loop\n");
+  debug_ast("Loop");
   return make_stat(T_WHILE, NULL, cond, body, NULL);
 }
 
+AST* make_echo(AST* expr) {
+  debug_ast("Echo");
+  return make_stat(T_ECHO, NULL, expr, NULL, NULL);
+}
+
 AST* make_type (PrimitiveType t) {
-  debug_ast("Type\n");
+  debug_ast("Type");
   Type res = malloc(sizeof(*res));
   *res = t;
   AST* ast = malloc(sizeof(*ast));
@@ -116,7 +121,7 @@ AST* make_type (PrimitiveType t) {
 }
 
 AST* make_bool_expr(Bool b) {
-  debug_ast("Bool_Expr\n");
+  debug_ast("Bool_Expr");
   return make_expr(T_E_BOOL, b, -1, NULL, -1, NULL, NULL);
 }
 
@@ -131,11 +136,11 @@ AST* make_ident_expr(char* ident) {
 }
 
 AST* make_unary_expr(Operators op, AST* expr) {
-  debug_ast("Unary_Expr\n");
+  debug_ast("Unary_Expr");
   return make_expr(T_UNOP, -1, -1, NULL, op, expr, NULL);
 }
 
 AST* make_binary_expr(Operators op, AST* expr1, AST* expr2) {
-  debug_ast("Binary_Expr\n");
+  debug_ast("Binary_Expr");
   return make_expr(T_BINOP, -1, -1, NULL, op, expr1, expr2);
 }

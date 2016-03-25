@@ -3,7 +3,7 @@
 
 typedef enum _typeNode  { T_PROG, T_CMDS, T_DEC, T_STAT, T_EXPR, T_TYPE } TypeNode;
 typedef enum _typeDec   { T_CONST, T_VAR } TypeDec;
-typedef enum _typeStat  { T_SET, T_IF, T_WHILE } TypeStat;
+typedef enum _typeStat  { T_SET, T_IF, T_WHILE, T_ECHO } TypeStat;
 typedef enum _typeExpr  { T_E_BOOL, T_NUM, T_IDENT, T_UNOP, T_BINOP } TypeExpr;
 typedef enum _operators { T_NOT, T_AND, T_OR, T_EQ, T_LT, T_ADD, T_SUB, T_MUL, T_DIV, T_MOD } Operators;
 typedef enum _types     { T_VOID, T_BOOL, T_INT } PrimitiveType;
@@ -83,6 +83,7 @@ AST* make_cst(char* ident, AST* type, AST* expr);
 AST* make_set(char* ident, AST* expr);
 AST* make_cond(AST* cond, AST* cons, AST* alt);
 AST* make_loop(AST* cond, AST* body);
+AST* make_echo(AST* expr);
 AST* make_type (PrimitiveType t);
 AST* make_bool_expr (Bool b);
 AST* make_integer_expr (int n);

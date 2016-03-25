@@ -110,6 +110,11 @@ void print_stat(FILE* f, AST* st) {
     print_prog(f, stat->prog1);
     fprintf(f, ")");
     break;
+  case T_ECHO:
+    fprintf(f, "echo(");
+    print_expr(f, stat->expr);
+    fprintf(f, ")");
+    break;
   default:
     fprintf(stderr, "Unknown statement type!\n");
     exit(EXIT_FAILURE);

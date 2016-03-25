@@ -1,1 +1,1 @@
-prog([var(x,int),set(x,22),while(lt(x,42),prog([set(x,add(x,1))]))])
+prog([var(x,int),set(x,22),while(lt(x,42),[])])
