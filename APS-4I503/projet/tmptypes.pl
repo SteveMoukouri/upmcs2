@@ -1,1 +1,0 @@
-prog([var(x,int),set(x,22),while(lt(x,42),[])])
