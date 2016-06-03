@@ -19,7 +19,7 @@ Filière STL
 
 * Notes de TD (partielles)
 * Projet 1: Universal Machine ICFP 2006
-* Projet 2: Analyse ASM sur github.com/ghivert/Student-Projects/tree/master/4I504%20-%20Compilation/MIPS%20Analyzer
+* Projet 2: Analyse ASM du côté de  [ghivert](https://github.com/ghivert/Student-Projects/tree/master/4I504%20-%20Compilation/MIPS%20Analyzer)
 
 ## APS - Analyse et Sémantique des Programmes
 
